@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Enigma Machine Toolkit
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Glenn
+    family-names: Anderson
+    email: ondoher@gmail.com
+repository-code: 'https://github.com/Ondoher/enigma'
+abstract: >-
+  Contains documentation, reference code and test data
+  to help in the creation of an Enigma Machine simulator.
+keywords:
+  - Enigma machine
+  - Enigma
+  - Simulation
+  - Test data
+  - cryptography
+license: MIT
