@@ -8,11 +8,11 @@ import { STANDARD_ALPHABET } from "./consts.js";
 /**
  * Construct this class to get a new instance of the Enigma. Many of the
  * parameters to the constructor and the config method reference the names of
- * standard Enigma parts. These are retrived from the Inventory instance
+ * standard Enigma parts. These are retrieved from the Inventory instance
  */
 export default class Enigma {
 	/**
-	 * The constructor for the Enigma. This represents the unconfigurable
+	 * The constructor for the Enigma. This represents the nonconfigurable
 	 * settings of the device.
 	 *
 	 * @param {Object} settings the settings for the Enigma
@@ -37,7 +37,7 @@ export default class Enigma {
 
 	/**
 	 * Call this method to normalize a connector number to be within the
-	 * the length of the currrent alphabet
+	 * the length of the current alphabet
 	 *
 	 * @param {Number} connector the number to be normalized
 	 *
@@ -60,7 +60,7 @@ export default class Enigma {
 	 * 	element being a pair of letters from the alphabet that are being swapped
 	 * 	on the plug board
 	 * @property {Array.<String>} rotors the array of installed rotors. The
-	 * 	order here is signicant and is given in the left to right direction.
+	 * 	order here is significant and is given in the left to right direction.
 	 * 	This means that last name in this list is the first rotor used in the
 	 * 	forward direction and last used in the backward direction. Each element
 	 * 	is the name of the rotor to use in the corresponding position. Stepping
@@ -86,7 +86,7 @@ export default class Enigma {
 
 		var ringOffsets = []
 
-		// because the rotors are secified in the reverse other they are used,
+		// because the rotors are specified in the reverse other they are used,
 		// we have to do the same for the ringSettings.
 		if (Array.isArray(ringSettings)) {
 			ringSettings = ringSettings.reverse();
@@ -174,7 +174,7 @@ export default class Enigma {
 		letter = letter.toUpperCase();
 		if (letter.length !== 1 || this.alphabet.indexOf(letter) === -1) {
 			if (letter !== ' ')
-				console.warn(`Unexected character ${letter}`);
+				console.warn(`Unexpected character ${letter}`);
 			return;
 		}
 
@@ -204,7 +204,7 @@ export default class Enigma {
 	/**
 	 * Call this shortcut method to encode a whole string
 	 *
-	 * @param {String} start the starting positon for the rotors
+	 * @param {String} start the starting position for the rotors
 	 * @param {String} text the text to encode
 	 *
 	 * @returns {String} the encoded string.

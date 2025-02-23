@@ -1,5 +1,5 @@
 /**
- * This is the class used to manage the standard inmventory of components. An
+ * This is the class used to manage the standard inventory of components. An
  * instance of this class is exported as the default of this module
  */
 
@@ -69,7 +69,7 @@ class Inventory {
 	 * @param {String} name the name of the rotor as it was added to the
 	 * 	inventory.
 	 *
-	 * @returns {Object} the rotor defintion
+	 * @returns {Object} the rotor definition
 	 * @property {String} map the connection map for the rotor
 	 * @property {String} turnovers the locations where turnovers happen
 	 */

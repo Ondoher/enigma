@@ -8,9 +8,9 @@ import { STANDARD_ALPHABET } from "./consts.js";
  */
 export default class EntryDisc extends Encoder {
 	/**
-	 * Constuctor for the entry disc.
+	 * Constructor for the entry disc.
 	 *
-	 * @param {String} name thge name of this entry disc
+	 * @param {String} name the name of this entry disc
 	 * @param {Object} settings contains the alphabet being used, and the map
 	 * 	between input and output contacts
 	 */

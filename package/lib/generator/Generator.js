@@ -25,7 +25,7 @@ export default class Generator {
 
 	/**
 	 * call this method to pick a random number from an array and remove it
-	 * @param {Array} list the array of itens to chooise from
+	 * @param {Array} list the array of items to choose from
 	 *
 	 * @returns {*} the chosen item
 	 */
@@ -101,7 +101,7 @@ export default class Generator {
 	}
 
 	/**
-	 * Call this method to randmply pick a given number of item pairs. The items
+	 * Call this method to randomly pick a given number of item pairs. The items
 	 * will be removed from the list.
 	 *
 	 * @param {Number} count the number of pairs to pick
@@ -225,7 +225,7 @@ export default class Generator {
 	 * 	settings
 	 * @property {Array.<String>} plugs 10 pairs of letters that will be used as
 	 * 	connections on the plug board
-	 * @propery {Array.<String>} indicators and array of four three letter
+	 * @property {Array.<String>} indicators and array of four three letter
 	 * 	strings. This will be unique across a key sheet
 	 */
 	generateDay(idx) {
@@ -277,10 +277,10 @@ export default class Generator {
 	}
 
 	/**
-	 * Call this method to turn a string into valid characters for encyption,
+	 * Call this method to turn a string into valid characters for encryption,
 	 * which is just the letters A-Z. If the generator was created with the
 	 * embellish option then certain characters in the original text will be
-	 * relaced by uncommon letter triplets. This allows for better presentation
+	 * replaced by uncommon letter triplets. This allows for better presentation
 	 * when the message as been decoded
 	 *
 	 * @param {String} text the original text
@@ -314,7 +314,7 @@ export default class Generator {
 	}
 
 	/**
-	 * Call this method to process one submessage from a longer message. This is
+	 * Call this method to process one sub-message from a longer message. This is
 	 * part of code to generate a message as the Enigma would have been used.
 	 *
 	 * @param {string} indicator the three letter code that can be sent to

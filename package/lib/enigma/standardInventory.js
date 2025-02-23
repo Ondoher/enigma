@@ -5,7 +5,7 @@ import inventory from'./Inventory.js';
  * I, M3 and M4
  */
 
-export var entryDiscDefintions = {
+export var entryDiscDefinitions = {
 	default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 };
 
@@ -74,7 +74,7 @@ function addReflector(name) {
 	inventory.addReflector(name, reflectorDefinitions[name]);
 }
 
-inventory.addEntryDisc('default', entryDiscDefintions.default);
+inventory.addEntryDisc('default', entryDiscDefinitions.default);
 
 addRotor('I');
 addRotor('II');

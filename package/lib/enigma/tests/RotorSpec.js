@@ -41,7 +41,7 @@ describe('Rotor Test Cases', function() {
 			});
 		});
 
-		describe('startPositon', function() {
+		describe('startPosition', function() {
 			it('no Rotation', function() {
 				rotor.setStartPosition('A');
 				expect(rotor.offset).toBe(0)

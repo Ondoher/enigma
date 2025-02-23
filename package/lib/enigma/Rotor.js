@@ -89,7 +89,7 @@ export default class Rotor extends Encoder {
 		var result = this.normalize(output - this.offset);
 
 		this.fire(evName, this.name,
-			`${evName} ${this.name}, input: ${input} ouput: ${result} relative input: ${index}, relative output: ${output} rotation: ${this.offset}`,
+			`${evName} ${this.name}, input: ${input} output: ${result} relative input: ${index}, relative output: ${output} rotation: ${this.offset}`,
 			{
 				input : input,
 				output: result,
@@ -109,7 +109,7 @@ export default class Rotor extends Encoder {
 	 */
 	step() {
 		// Because the turnover notch is attached to the outer ring, and the
-		// logical coordinates is based on the wiring, the logical position of
+		// logical coordinates are based on the wiring, the logical position of
 		// the notch for turnover needs to be adjusted to remove the ring offset.
 		this.offset = this.normalize(this.offset + 1);
 		var turnoverOffset = this.normalize(this.offset + this.ringOffset);

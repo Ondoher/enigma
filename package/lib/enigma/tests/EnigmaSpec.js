@@ -6,11 +6,6 @@ import { enigmaData } from './EnigmaData.js';
 
 describe('Enigma Test Cases', function() {
 	var enigma;
-/*
-	describe('Configuration', function() {
-
-	})
-*/
 
 	function messageLoop(messages, which, cb) {
 		return messages.find(function(message) {

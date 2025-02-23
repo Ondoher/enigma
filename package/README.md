@@ -67,6 +67,7 @@ Enigma.
 
 ### **Methods**
 
+---
 `constructor(name, settings)`
 
 This is the constructor for the plugboard class. It takes these parameters:
@@ -80,6 +81,7 @@ plug board in the Enigma, so the name here doesn't really matter
     - _map_ (optional) set this to a string that will set the mapping between
     the position in the string to the output connector. Defaults to A-Z
 
+---
 `configure(settings)`
 
 Call this method to configure the plug board. This must be called even if there
@@ -92,6 +94,7 @@ are no plug connections.
     connects one input letter to another. If it is an array then then each item
     is a pair of letters to specify how the plugs are connected
 
+---
 `encode(direction, input)`
 
 Call this method to encode a value in the given direction, right vs left.
@@ -123,6 +126,7 @@ for an explanation.
 
 ### **Methods**
 
+---
 `constructor(name, settings)`
 
 #### **Parameters**
@@ -145,6 +149,7 @@ for an explanation.
     turnover locations, M and Z. Pass an empty string when the rotor does not
     rotate during stepping
 
+---
 `setStartPosition(connector)`
 
 Call this method to set the starting rotation for encoding.
@@ -153,6 +158,7 @@ Call this method to set the starting rotation for encoding.
 - **connector** This is a letter value that corresponds to what would appear in
 the rotation window. This value will be adjusted for the ring setting.
 
+---
 `encode(direction, input)`
 
 Call this method to map an input connector to an output connector when the
@@ -168,6 +174,7 @@ zero point we need to adjust the connector number for the current rotation.
 #### **Returns**
 the output connector in physical space
 
+---
 `step()`
 
 Call this method to step the rotor
@@ -175,6 +182,7 @@ Call this method to step the rotor
 #### **Returns**
 true if the next rotor should be stepped
 
+---
 `willTurnover()`
 Call this method to see if the next step on this rotor will lead to turn over.
 The Enigma class will call this on the middle rotor to handle double stepping.
@@ -182,7 +190,8 @@ The Enigma class will call this on the middle rotor to handle double stepping.
 #### **Returns**
 true if the next step will cause turnover
 
-`isfixed()`
+---
+`isFixed()`
 
 Call this method to find whether this is a fixed rotor.
 
@@ -221,6 +230,7 @@ this, reflectors only encode in a single direction.
 
 ### **Methods**
 
+---
 `constructor(name, settings)`
 
 #### **Parameters**
@@ -236,6 +246,7 @@ this, reflectors only encode in a single direction.
     of this string at that index is the output connector. For example,
     'YRUHQSLDPXNGOKMIEBFZCWVJAT' which is the map for standard reflector B.
 
+---
 `encode(direction, input)`
 
 Call this method to encode a value when reversing the encoding direction of the
@@ -266,12 +277,13 @@ Create an instance of this class to construct a full Enigma.
 
 ### **Methods**
 
+---
 `constructor(settings)`
 
 The constructor for the Enigma.
 
 #### **Parameters**
-- **settings** The settings here are for the unconfigurable options of the
+- **settings** The settings here are for the nonconfigurable options of the
     device.
     - _alphabet_ (optional) set this to a string of letters that are an
     alternative to the standard A-Z. Defaults to A-Z
@@ -281,6 +293,7 @@ The constructor for the Enigma.
     standard reflectors from the inventory which are A, B, and C. For the M4,
     Thin-B and Thin-C have been defined.
 
+---
 `configure(settings)`
 
 Call this method to configure the enigma instance for daily setup.
@@ -304,20 +317,23 @@ Call this method to configure the enigma instance for daily setup.
     array, is the ring setting for a rotor. Like the rotors, these are given
     from left to right.
 
+---
 `step()`
 
 Call this method to step the Enigma. This will rotate the first rotor to the
 right and step and double step when necessary.
 
+---
 `setStart(start)`
 
 #### **Parameters**
-- **start** this is either a string of an array of numbers. The length of the
+- **start** this is either a string or an array of numbers. The length of the
     string or the array should match the number of rotors and are given left to
     right. If start is a string then the letters of the string specify the start
     value seen in the window for the corresponding rotor. If it is an array then
     each number will be the one-based rotation value.
 
+---
 `keyPress(letter)`
 
 Call this method to encode a single letter. This will step the Enigma before
@@ -332,6 +348,7 @@ encoding the letter.
 #### **Returns**
 undefined or the encoded character.
 
+---
 `encode(start, text)`
 
 Call this method to encode a whole string.
@@ -405,6 +422,7 @@ following components are already defined:
 
 ### **Methods**
 
+---
 `addRotor(name, map, turnovers)`
 
 Call this method to add a new rotor definition.
@@ -425,6 +443,7 @@ Call this method to add a new rotor definition.
     two turnover locations, 'M' and 'Z'. Pass an empty string if this is a fixed
     rotor
 
+---
 `addReflector(name, map)`
 
 Call this method to add a new reflector definition.
@@ -434,6 +453,7 @@ Call this method to add a new reflector definition.
     constructing an Enigma class.
 - **map** this uses the same format used in the `addRotor` method
 
+---
 `addEntryDisc(name, map)`
 
 Call this method to add a new entry disc. There was only one used in the
@@ -445,6 +465,7 @@ differently.
     constructing an Enigma class.
 - **map** this uses the same format used in the `addRotor` method
 
+---
 `getRotor(name)`
 
 Call this method to get the setup for a defined rotor.
@@ -457,6 +478,7 @@ an object with these fields
 - **map** the connection map for the rotor
 - **turnovers** the locations where turnovers happen
 
+---
 `getReflector(name)`
 
 Call this method to get the setup for a defined reflector.
@@ -468,6 +490,7 @@ Call this method to get the setup for a defined reflector.
 an object with these fields
 - **map** the connection map for the reflector
 
+---
 `getEntryDisc(name)`
 
 Call this method to get the setup for a defined entry disc.
@@ -488,6 +511,7 @@ to generate random test data.
 
 ### **Methods**
 
+---
 `generateEncodedText(settings)`
 
 Call this method to generate some random text encoded with a random Enigma
@@ -534,6 +558,7 @@ function generateI(count, list) {
 }
 ```
 
+---
 `generateEnigmaSetup(settings)`
 
 Call this method to generate a random Enigma setup. This includes only the
@@ -543,11 +568,11 @@ configurable items, it does not include the details of the machine itself.
 - **settings** (optional), alternative configuration settings for the Enigma
     - _rotors_ (optional) alternate list of rotors to choose from. This will
         default to all defined rotors except those that are fixed.
-     _fixed_ (optional) an array of fixed rotors to choose one from. Defaults to
+    - _fixed_ (optional) an array of fixed rotors to choose from. Defaults to
         an empty list
 
 #### **Returns**
-the generated settings. This is an obejct with these fields
+the generated settings. This is an object with these fields
 
 - **rotors** an array of three rotor names, four if fixed was given in the
     settings
@@ -555,6 +580,7 @@ the generated settings. This is an obejct with these fields
 - **plugs** 10 pairs of letters that will be used as connections on the plug
     board
 
+---
 `generateKeySheet(days)`
 
 Call this method to generate a monthly key sheet. This is the same data that
@@ -575,10 +601,11 @@ the key sheet which is an array of objects, each one with these fields
 - **indicators** and array of four three-letter strings. These strings will be
     unique across the key sheet
 
+---
 `generateMessages(sheet, count)`
 
 Call this method to create an array of messages based off a key sheet. This has
-the same informaton that a message in the field would possess. The construction
+the same information that a message in the field would possess. The construction
 of the message follow the the standards of the German military beginning in
 1940. They are as follows:
 

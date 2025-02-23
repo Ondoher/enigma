@@ -5,7 +5,7 @@ import { STANDARD_ALPHABET } from "./consts.js";
  * @callback Listener
  * @param {String} event a string that identifies the event being fired
  * @param {String} name the name of the component firing the event
- * @param {String} message a human readable description of the evebnt details
+ * @param {String} message a human readable description of the event details
  * @param {Object} into event specific data for the event
  */
 
@@ -48,7 +48,7 @@ export default class Encoder {
 	}
 
 	/**
-	 * given an existing connection map from inoput to out put, create a new map
+	 * given an existing connection map from input to out put, create a new map
 	 * that has the connections going in the other direction, output to input.
 	 *
 	 * @param {Array.<Number>} map connection map
