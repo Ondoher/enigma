@@ -2,7 +2,8 @@ import PlugBoard from "../PlugBoard.js";
 import { plugBoardData } from './PlugBoardData.js';
 
 describe('PlugBoard Test Cases', function() {
-    var plugBoard;
+    /** @type {PlugBoard} */
+    let plugBoard;
 
     describe('Encode', function() {
         beforeEach(function() {
@@ -13,32 +14,32 @@ describe('PlugBoard Test Cases', function() {
 
         it('passes through if no plugs defined', function() {
             plugBoard.configure()
-            var alphabet = [...plugBoardData.alphabet];
+            let alphabet = [...plugBoardData.alphabet];
             alphabet.forEach(function(letter) {
-                var input = plugBoardData.alphabet.indexOf(letter);
-                var output = plugBoard.encode('right', input);
+                let input = plugBoardData.alphabet.indexOf(letter);
+                let output = plugBoard.encode('right', input);
                 expect(output).toBe(input);
-                var output = plugBoard.encode('left', input);
+                output = plugBoard.encode('left', input);
                 expect(output).toBe(input);
             })
         });
 
         it('should link cabled pairs', function() {
-            plugBoard.configure({plugs: plugBoardData.plugSettings});
-            var pairs = plugBoardData.plugSettings.split(' ');
-            var alphabet = plugBoardData.alphabet;
+            plugBoard.configure(plugBoardData.plugSettings);
+            let pairs = plugBoardData.plugSettings.split(' ');
+            let alphabet = plugBoardData.alphabet;
             pairs.forEach(function(pair) {
-                var left = alphabet.indexOf(pair[0]);
-                var right = alphabet.indexOf(pair[1]);
+                let left = alphabet.indexOf(pair[0]);
+                let right = alphabet.indexOf(pair[1]);
 
-                var output = plugBoard.encode('right', left);
+                let output = plugBoard.encode('right', left);
                 expect(output).toBe(right);
-                var output = plugBoard.encode('right', right);
+                output = plugBoard.encode('right', right);
                 expect(output).toBe(left);
 
-                var output = plugBoard.encode('left', right);
+                output = plugBoard.encode('left', right);
                 expect(output).toBe(left);
-                var output = plugBoard.encode('left', left);
+                output = plugBoard.encode('left', left);
                 expect(output).toBe(right);
             })
         })

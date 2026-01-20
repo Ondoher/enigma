@@ -4,6 +4,7 @@ import Rotor from "./Rotor.js";
 import Reflector from "./Reflector.js";
 import inventory from './Inventory.js'
 import { STANDARD_ALPHABET } from "./consts.js";
+import Encoder from "./Encoder.js";
 
 /**
  * Construct this class to get a new instance of the Enigma. Many of the
@@ -12,27 +13,30 @@ import { STANDARD_ALPHABET } from "./consts.js";
  */
 export default class Enigma {
 	/**
-	 * The constructor for the Enigma. This represents the nonconfigurable
+	 * The constructor for the Enigma. This represents the unconfigurable
 	 * settings of the device.
 	 *
-	 * @param {Object} settings the settings for the Enigma
-	 * @property {String} [entryDisc] the name of entry disc in the inventory
-	 * this defaults 'default'
-	 * @param {String} reflector specifies one of possible reflectors, the
-	 * predefined reflectors are A, B, C, Thin-B and Thin-C
-	 * @param {String} [alphabet] the alphabet used by the system, usually just
-	 *	the uppercase latin letters
+	 * @param {EnigmaSetup} settings
 	 */
 	constructor(settings) {
-		var {entryDisc = 'default', reflector, alphabet = STANDARD_ALPHABET} = settings;
-		var entryDiscSettings = inventory.getEntryDisc(entryDisc)
+		let {entryDisc = 'default', reflector, alphabet = STANDARD_ALPHABET, model = "Enigma"} = settings;
+		let entryDiscSettings = inventory.getEntryDisc(entryDisc)
 
-		var reflectorSettings = inventory.getReflector(reflector)
+		let reflectorSettings = inventory.getReflector(reflector)
 		this.alphabet = alphabet;
 		this.plugboard = new PlugBoard('plugboard', {});
 		this.entryDisc = new EntryDisc('entry-disc', entryDiscSettings);
 		this.reflector = new Reflector('reflector', reflectorSettings)
 		this.length = alphabet.length;
+		/** @type {Rotor[]} */
+		this._rotors = [];
+		/** @type {{[rotor: number]: boolean}} */
+		this.pending = [];
+		this.name = model;
+		/** @type {Encoder[]} */
+		this.encoders = [];
+		/**@type {SimplifiedConfiguration & {reflector: string}} */
+		this._configuration = {reflector}
 	}
 
 	/**
@@ -51,40 +55,44 @@ export default class Enigma {
 	}
 
 	/**
+	 * the configured rotors
+	 *
+	 * @return {Rotor[]}
+	 */
+	get rotors() {
+		return this._rotors;
+	}
+
+	/**
+	 * @returns {SimplifiedConfiguration & {reflector: string}}
+	 */
+	get configuration() {
+		return this._configuration;
+	}
+
+	/**
 	 * Configure the Enigma for encoding.
 	 *
-	 * @param {Object} settings the configuration of the Enigma. These settings
-	 * represent the aspects of the Enigma that can can change for daily
+	 * @param {EnigmaConfiguration} settings - the configuration of the Enigma.
+	 * These settings represent the aspects of the Enigma that can can change for daily
 	 * configuration.
-	 * @property {Array.<String>|String} [plugs] array of strings with each
-	 * 	element being a pair of letters from the alphabet that are being swapped
-	 * 	on the plug board
-	 * @property {Array.<String>} rotors the array of installed rotors. The
-	 * 	order here is significant and is given in the left to right direction.
-	 * 	This means that last name in this list is the first rotor used in the
-	 * 	forward direction and last used in the backward direction. Each element
-	 * 	is the name of the rotor to use in the corresponding position. Stepping
-	 * 	stops at the first fixed rotor
-	 * @property {String|Array<Number>} [ringSettings] each letter in this
-	 * 	string represents the offset of the key settings from the rotor start
-	 * 	position. If it is an array, then each value is the one based key
-	 * 	setting for the related rotor,
 	 */
 	configure(settings) {
-		var { rotors, ringSettings = [], plugs = [] } = settings;
+		let { rotors, ringSettings = [], plugs = [] } = settings;
 
 		// make copies of these configurations so that we don't change the
 		// values from the caller, which in JavaScript are passed by reference.
-		rotors = JSON.parse(JSON.stringify(rotors));
-		ringSettings = JSON.parse(JSON.stringify(ringSettings));
+		let useRotors = structuredClone(rotors);
+		ringSettings = structuredClone(ringSettings);
 
 		// the rotors are given in the left to right direction, but are actually
 		// used in the right to left direction. So, here we reverse them
-		rotors = rotors.reverse();
+		useRotors = useRotors.reverse();
 
-		this.plugboard.configure({plugs})
+		this.plugboard.configure(plugs)
 
-		var ringOffsets = []
+		/** @type {number[]} */
+		let ringOffsets = []
 
 		// because the rotors are specified in the reverse other they are used,
 		// we have to do the same for the ringSettings.
@@ -97,19 +105,25 @@ export default class Enigma {
 				ringOffsets.push(this.normalize(offset - 1))
 			}, this);
 		} else {
-			var letters = [...ringSettings];
+			let letters = [...ringSettings];
 			letters = letters.reverse();
 			letters.forEach(function(letter) {
-				var offset = this.alphabet.indexOf(letter);
+				let offset = this.alphabet.indexOf(letter);
 				ringOffsets.push(offset);
 			}, this)
 		}
 
-		this.rotors = rotors.map(function(name, idx) {
+		this._rotors = useRotors.map(function(name, idx) {
 			return new Rotor(`rotor-${name}`, {...inventory.getRotor(name), alphabet: this.alphabet, ringSetting: ringOffsets[idx], cb: this.cb});
 		}, this);
 
 		this.encoders = [this.plugboard, this.entryDisc, ...this.rotors];
+
+		this._configuration = {...this._configuration,
+			rotors,
+			ringOffsets,
+			plugs: this.plugboard.plugs
+		}
 	}
 
 	/**
@@ -117,7 +131,7 @@ export default class Enigma {
 	 * stepping between all rotors
 	 */
 	step() {
-		this.rotors.forEach(function(rotor, idx) {
+		this._rotors.forEach(function(rotor, idx) {
 			if (rotor.isFixed()) return;
 
 			// This is the double stepping. Only do this for the middle rotor
@@ -138,21 +152,25 @@ export default class Enigma {
 	/**
 	 * Call this method to set the starting rotation for the messages to encrypt
 	 *
-	 * @param {Array.Number>|String} the length of the string or the array
+	 * @param {number[]|string} setup - length of the string or the array
 	 * 	should match the number of rotors and are given left to right. If start
 	 * 	is a string then the letters of the string specify the start value seen
 	 * 	in the window for the corresponding rotor. If it is an array then each
 	 * 	number will be the one-based rotation.
 	 */
-	setStart(start) {
-		if (Array.isArray(start)) {
-			var charArray = start.map(function(number) {
+	setStart(setup) {
+		let start = '';
+		if (Array.isArray(setup)) {
+			let charArray = setup.map(function(number) {
 				number--;
 				return this.alphabet[number];
 			}, this);
 
 			start = charArray.join('');
+		} else {
+			start = setup;
 		}
+
 		start = [...start].reverse();
 
 		// reset the rotation pending state
@@ -168,7 +186,7 @@ export default class Enigma {
 	 * the encoded letter
 	 *
 	 * @param {String} letter the key pressed
-	 * @returns {String} the encoded letter
+	 * @returns {String | undefined} the encoded letter
 	 */
 	keyPress(letter) {
 		letter = letter.toUpperCase();
@@ -182,13 +200,13 @@ export default class Enigma {
 		this.step();
 
 		// encode to the right
-		var connector =  this.encoders.reduce(function(connector, encoder) {
+		let connector =  this.encoders.reduce(function(connector, encoder, idx) {
 			connector = encoder.encode('right', connector);
 			return connector;
 		}.bind(this), this.alphabet.indexOf(letter));
 
 		// reflector
-		connector = this.reflector.encode('', connector);
+		connector = this.reflector.encode('right', connector);
 
 		// encode to the left
 		connector = this.encoders.reduceRight(function(connector, encoder) {
@@ -211,8 +229,8 @@ export default class Enigma {
 	 */
 	encode(start, text) {
 		this.setStart(start)
-		var letters = [...text];
-		var output = letters.map(function(letter) {
+		let letters = [...text];
+		let output = letters.map(function(letter) {
 			return this.keyPress(letter);
 		}, this)
 
@@ -222,7 +240,7 @@ export default class Enigma {
 	/**
 	 * Call this method to call the event listener
 	 *
-	 * @param {String} name the name of the event
+	 * @param {String} type the name of the event
 	 * @param  {...any} rest the parameters to pass to the callback
 	 */
 	fire(type, ...rest) {

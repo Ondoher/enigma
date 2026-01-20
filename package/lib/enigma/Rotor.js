@@ -1,3 +1,4 @@
+import { STANDARD_ALPHABET } from "./consts.js";
 import Encoder from "./Encoder.js";
 
 /**
@@ -12,27 +13,12 @@ export default class Rotor extends Encoder {
 	 * @param {String} name the name of the rotor; under normal circumstances
 	 * 	this will be the string 'rotor-' plus the standard name for the rotor,
 	 	* for example 'rotor-IV'
-	 * @param {Object} settings an object that contains the various options that
+	 * @param {RotorSetup} settings an object that contains the various options that
 	 * define the the rotor and how it is configured.
-	 * @property [alphabet] set this to a string of letters that are an
-	 * alternative to the standard A-Z. Defaults to A-Z
-	 * @property {String} map a string that defines the mapping between the
-	 * input and output connectors. The index into the string is the input
-	 * connector and the value of this string at that index is the output
-	 * connector. For example 'EKMFLGDQVZNTOWYHXUSPAIBRCJ', which is the map
-	 * for standard rotor I.
-	 * @property {Number} [ringSetting] a number that specifies how far forward
-	 * 	to offset the outer ring relative to the internal wiring.
-	 * @property {String} turnovers a string that specifies the relative
-	 * location of where on the rotor turnover will occur. The value here is the
-	 * rotation value would be displayed in the window when turnover happens,
-	 * expressed as a character. The standard rotors VI-VIII, available in the
-	 * later model M3 had two turnover locations, M and Z. Pass an empty string
-	 * when the rotor does not rotate during stepping
 	 */
 	constructor(name, settings) {
 		super(name, settings);
-		var { map, turnovers = '', ringSetting = 0} = settings
+		var { map = STANDARD_ALPHABET, turnovers = '', ringSetting = 0} = settings
 
 		this.map = [...map];
 		this.rightMap = this.makeMap(map);

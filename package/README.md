@@ -2,6 +2,21 @@
     <img src="./enigma-toolkit-logo.png" height="100"/>
 </div>
 
+# Table of Contents
+[Getting Started](#getting-started)
+[Simulation](#simulation)
+- [Events](#events)
+- [Plugboard](#plugboard)
+- [Rotor](#rotor)
+- [Reflector](#reflector)
+- [Enigma](#enigma)
+- [Example](#example)
+
+[Generation](#generation)
+- [Random](#random)
+- [Generator](#generator)
+- [CodeBook](#codebook)
+
 # Getting Started
 
 The Enigma toolkit is released as a nodejs ESM module. ESM is a relatively new
@@ -383,7 +398,23 @@ fields.
 
 - **letter** the encoded letter.
 
-### **Example**
+## **Properties**
+
+`configuration`
+Use this property to get all the information necessary to reconstruct the
+details on this Enigma. It is an object with these fields:
+
+- **rotors** - this list of rotor names
+- **ringSettings** - an array of ring settings for each rotor
+- **plugs** - a space separated string of plug pairs
+- **reflector** - the installed reflector
+
+---
+`rotors`
+An array of the installed rotors
+
+
+## **Example**
 
 ```javascript
 import {Enigma} from '@ondoher/enigma';
@@ -502,96 +533,360 @@ Call this method to get the setup for a defined entry disc.
 an object with these fields
 - **map** the connection map for the entry disc
 
-# Message Generator
+# Generation
+The toolkit has the ability to generate random data that comes in two forms. The
+first is the configuration of an Enigma and the generation of encrypted messages.
+The second is the generation and use of message code books, specifically the
+creation of key sheets and generation of messages using those key sheets. This
+is implemented across three classes.
 
-The message generator API consists of a single class `Generator` which is used
-to generate random test data.
+- **Random** - Umplements a seedable pseudo-random number generator. The use of
+    seeds allows running experiments on a predictable set of pseudo-random data
+- **Generator** - Use this to create random configurations of an Enigma and
+generate messages for that configuration.
+- **CodeBook** - Use this to generate random key sheets and generate messages
+using that key sheet
 
-## Generator
+## Random
+
+A single instance of this class is the default export of the Random module. Use
+this to generate pseudorandom numbers and perform randomization operations on
+lists of items. This class uses a seedable pseudorandom number generator, this
+enables the predictable generation of set of operations to reproduce the same
+results.
 
 ### **Methods**
 
 ---
-`generateEncodedText(settings)`
+`randomize(seed)`
 
-Call this method to generate some random text encoded with a random Enigma
-configuration. The random text will be a few sentences from Hamlet.
+Call this method to set the random seed for the randomizer. Setting the seed
+to a known value will cause to randomizer to output the same sequence of random
+values. On creation the seed is set to `Date.now()`
 
 #### **Parameters**
-- **settings** (optional), alternative configuration settings for the Enigma
-    - _rotors_ (optional) alternate list of rotors to choose from. Defaults to
-        all defined rotors
-    - _fixed_ (optional) an array of fixed rotors to choose from. Defaults to
-        an empty list
-    - _reflectors_ (optional) an array of reflectors to choose from. Defaults to
-        A, B and C
-
-#### **Returns**
-the generated text and meta data. This is an object with these fields
-
-- **setup** how the Enigma was configured
-    - _rotors_  an array of three rotor names, four if a fixed list was given
-        in the settings
-    - _ringSettings_ an array of offsets for the ring settings
-    - _plugs_  10 pairs of letters that will be used as connections on the plug
-        board
-    - _reflector_ which reflector was configured
-
-- **start** three letter or four string with the starting rotor offsets used to
-    encode the text.
-- **message** the encoded text
-- **clear** the unencoded text. This is provided to validate the simulation
-    result
-
-#### **Example**
-
-```JavaScript
-// Generate messages for the Enigma Model I
-function generateI(count, list) {
-    for (let idx = 0; idx < count; idx++) {
-        let message = generator.generateEncodedText({
-            rotors: ['I', 'II', 'III', 'IV', 'V'],
-            reflectors: ['A', 'B', 'C'],
-        })
-        list.push({model: 'I', ...message});
-    }
-}
-```
+- **seed** - the new seed number
 
 ---
-`generateEnigmaSetup(settings)`
+`random(limit)`
 
-Call this method to generate a random Enigma setup. This includes only the
-configurable items, it does not include the details of the machine itself.
+Call this method to generate a new random number. If a limit is provided the
+output will be a random number between 0 and limit-1. If not, the result will be
+a decimal number between 0 and 1
 
 #### **Parameters**
-- **settings** (optional), alternative configuration settings for the Enigma
-    - _rotors_ (optional) alternate list of rotors to choose from. This will
-        default to all defined rotors except those that are fixed.
-    - _fixed_ (optional) an array of fixed rotors to choose from. Defaults to
-        an empty list
+- **limit** (optional) - if provided the output will be an integer value less
+than this
 
 #### **Returns**
-the generated settings. This is an object with these fields
+The pseudo-random number
 
-- **rotors** an array of three rotor names, four if fixed was given in the
-    settings
-- **ringSettings** an array of offsets for the ring settings
-- **plugs** 10 pairs of letters that will be used as connections on the plug
-    board
+---
+`randomCurve(dice, faces, zeroBased)`
+
+Call this to generate a random number that is distributed along a bell curve.
+This is done by generating a set of random numbers each within a limit, and
+adding them together.
+
+#### **Parameters**
+- **dice** - the number of random numbers that should be chosen
+- **faces** - the range of integer values
+- **zeroBased** - if true the random numbers will start at 0, defaults to false
+
+#### **Result**
+The integer result
+
+---
+`pickOne(list)`
+
+Call this method to pick a random element from the provided array. The item will
+be removed from this array. Use this method if you want to prevent the same item
+from being used more than once.
+
+#### **Parameters**
+- **list** - an array if items to choose from.
+
+#### **Returns**
+The array element
+
+---
+`pickPair(list)`
+
+Call this method to pick two items from the provided array. The items will be
+removed from the array. If the array is less than two items then it will return
+either an empty array or an array with one element.
+
+#### **Parameters**
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array with the picked elements
+
+---
+`pickPairs(count, list)`
+
+Call this method to pick a list of item pairs from a list of items. The items
+are removed from the list as chosen.
+
+#### **Parameters**
+- **count** - how many item pairs to pick
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array of item pairs
+
+---
+`pick(count, list)`
+
+Call this method to pick a specified number of items from the list. The items
+will be removed. It will return at most `list.length` elements.
+
+#### **Parameters**
+- **count** - how many items to pick
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array with the chosen elements
+
+---
+`chooseOne(list)`
+
+Call this method to pick a random element from the provided array. The item will
+remain in the list.
+
+#### **Parameters**
+- **list** - an array of items to choose from.
+
+#### **Returns**
+The array element
+
+---
+`choosePair(list)`
+
+Call this method to choose two items from the list, the elements will not be
+removed. The returned items are guaranteed be different. If the array is less
+than two elements it will be returned as the result
+
+#### **Parameters**
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array with the chosen elements
+
+---
+`chooseRange(count, list)`
+
+Call this method to pick a contiguous list of items from the given list. The
+items will remain in the list.
+
+#### **Parameters**
+- **count** - how many items in the range
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array with the chosen elements
+
+---
+`choose(count, list)`
+
+Call this method to choose a specified number if items from the list. The items
+will not be removed. It may return the same item multiple times.
+
+#### **Parameters**
+- **count** - how many items to choose
+- **list** - an array if items to choose from.
+
+#### **Returns**
+An array with the chosen elements
+
+---
+
+## Generator
+
+Use the generator class to generate random enigma machine configurations and use these to generate random messages.
+
+### **Methods**
+
+`cleanMessage(text)`
+
+Call this method to prepare the string for encoding. The string will be converted to uppercase and remove any characters not within A-Z
+
+#### **Parameters**
+- **text** - the text to clean
+
+#### **Returns**
+The cleaned up text
+
+`groupText(text, size)`
+
+Call this method to break the given text into groups of a given size,
+separated by spaces.
+
+#### **Parameters**
+- **text** - the text to group
+- **size** (optional) - the size of the groups, defaults to 5
+
+#### **Returns**
+The grouped text as a string
+
+---
+`generateSentences(count)`
+
+Call this method to generate an array of random sentences. These sentences will be a contiguous list of lines from Hamlet.
+
+#### **Parameters**
+- **count** - the number of sentences to generate
+
+#### **Returns**
+An array of sentences
+
+---
+`getModelOptions(model)`
+
+Call this method to get the range of setup and configuration options for
+a specific Enigma model. The supported models are *I, M3 and M4*
+
+#### Parameters
+- **model** - the model of Enigma to use
+
+#### Returns
+
+An object with these fields
+
+- **reflectors** - The names of the possible reflectors installed for this model.
+- **rotors** - The names of the rotors available for this model
+- **fixed** - the possible fixed rotors for this model
+
+---
+`generateEnigmaConfiguration(setup)`
+
+Call this method to get a random configuration for an enigma.
+
+#### **Paramters**
+- **setup** - the options for configuration with these fields
+    - **rotors** (optional) - the list of rotors to choose from. Defaults to
+    the list of unfixed rotors in the inventory
+    - **fixed** (optional) - if true, it defaults to the list of installed fixed
+    rotors, if an array, uses this array as the list of fixed rotors to choose
+    from. The default is an empty array.
+
+#### **Returns**
+An object with these fields>
+- **rotors** - the rotors to install
+- **plugs** - the plug board configuration as a string if space separated pairs
+- **ringSettings** - an array of numbers for the ring setting for each rotor
+
+---
+`createRandomEnigma(model, reflectors)`
+
+Call this method to create a new Enigma object, with a reflector chosen from the
+given list.
+
+#### **Parameters**
+- **model** (optional) - the model of the Enigma, defaults to the string "Enigma"
+- **reflectors** (optional) - the possible reflectors, defaults to [A, B, C]
+
+#### **Returns**
+- a newly created `Enigma` instance
+
+---
+`generateMessage(enigma)`
+
+Call this method to create and encrypt a random message using the given Enigma.
+The text of the message will be between 2 and 5 sentences from Hamlet.
+
+#### **Parameters**
+
+- **enigma** the `Enigma` instance to use
+
+#### **Returns**
+An object with these fields
+
+- **start** - a string with the start positions for each rotor expressed as a
+letter
+- **decoded** - the clear text version of the message
+- **encoded** - the encoded string using the given `Enigma` instance
+
+
+### **Example**
+
+```javascript
+    function generateForModel(model, count, list) {
+        let {reflectors, rotors, fixed} = generator.getModelOptions(model);
+        let enigma = generator.createRandomEnigma(model, reflectors)
+
+        for (let idx = 0; idx < count; idx++) {
+            let configuration = generator.generateEnigmaConfiguration({rotors, fixed});
+            enigma.configure(configuration);
+
+            let message = generator.generateMessage(enigma);
+
+            list.push({model, ...message});
+        }
+    }
+
+    let messages = [];
+
+    generateForModel('I', 5, messages);
+    generateForModel('M3', 5, messages);
+    generateForModel('M4', 5, messages);
+```
+
+## CodeBook
+
+Use this class to create [key sheets](https://www.ciphermachinesandcryptology.com/en/enigmaproc.htm)
+and messages using those key sheets.
+
+### Key sheet
+A key sheet specifies how to configure the enigma machine each day for a whole
+month. It consisted of one line per day, sorted from the last day of the month
+until the first. Each line had these columns:
+
+- **date (Datum)** - the numerical day of the month
+- **rotor setup (Walzenlage)** - the rotors to use
+- **ring settings (Ringstellung)** - the ring setting for each rotor
+- **plugboard configuration (Steckerverbindungen)** - how the ten plugs where
+connected to the plugboard
+- **indicators (Kenngruppen)** - a set of four three digits codes that were an
+index into the specific day
+
+---
+### **Methods**
+
+`constructor(enigma)`
+
+This is the constructor for the `CodeBook`. Each instance of this class works
+with an instance of the `Enigma` class.
+
+#### **Parameters**
+- **enigma** - the `Enigma` instance to use.
+
+---
+`configure(config)`
+
+Call this method to configure the `Enigma` used by this instance.
+
+#### **Parameters**
+
+- **config** - the simplified configuration returned by `Generator.generateEnigmaConfiguration`.
+it has these fields.
+    - **rotors** - the rotors to install
+    - **plugs** - the plug board configuration as a string if space separated pairs
+    - **ringSettings** - an array of numbers for the ring setting for each rotor
+
 
 ---
 `generateKeySheet(days)`
 
 Call this method to generate a monthly key sheet. This is the same data that
-would have been used by officers to setup the Enigma every day. The keysheet
-is generated for an M3 (rotors I-VIII) using reflector B
+would have been used by officers to setup the Enigma every day. The key sheet
+is created based on the enigma instance
 
 #### **Parameters**
 - **days** The number of days to generate data for
 
 #### **Returns**
-the key sheet which is an array of objects, each one with these fields
+An array of objects, each one with these fields
 
 - **day** the day of the month
 - **rotors** an array of three rotor names
@@ -601,10 +896,11 @@ the key sheet which is an array of objects, each one with these fields
 - **indicators** and array of four three-letter strings. These strings will be
     unique across the key sheet
 
----
-`generateMessages(sheet, count)`
 
-Call this method to create an array of messages based off a key sheet. This has
+---
+`generateMessage(sheet, dayIdx, text)`
+
+Call this method to generate a message using the given key sheet. Each message has
 the same information that a message in the field would possess. The construction
 of the message follow the the standards of the German military beginning in
 1940. They are as follows:
@@ -626,44 +922,82 @@ key identifiers from the key sheet that defines the Enigma configuration. The
 first two characters of this group were randomly chosen, and the last three were
 one of the key identifiers for that daily setup. This text was not encrypted.
 
+
 #### **Parameters**
-- **sheet** a key sheet as generated from `generateKeySheet`
-- **count** the number of messages to create
+- **sheet** - the key sheet to use
+- **dayIdx** (optional) - if specified the zero-based day to use, defaults to
+a random day
+- **text** (optional) - if provided will be used as the text of the message.
+Defaults to between two and five contiguous lines from Hamlet
 
 #### **Returns**
-an array of messages. Each message is an array of sub messages. A message was
-broken down into text blocks that were no longer than 250 characters and sent
-in multiple parts. These sub messages were sent using a unique key and start
-position. These are the fields in a sub message.
+The configuration of the Enigma and an array of sub messages, which could be
+longer than one for large messages.
 
-- **key** a randomly chosen key, this would be transmitted with the message
-- **enc** the encoded start position for the message. This was encoded using
+The returned object has these fields
+- **options**- the configuration used to generate the message
+    - **rotors** - the installed rotors to install
+    - **plugs** - the plug board configuration as a string of space separated pairs
+    - **ringSettings** - an array of numbers for the ring setting for each rotor
+    - **reflector**- the installed reflector
+- **parts** - an array of sub messages, each with these fields
+    - **key** - a randomly chosen key, this would be transmitted with the message
+    - **enc** - the encoded start position for the message. This was encoded using
     the randomly chosen key. This was sent with the message
-- **text** the message text encoded using the unencoded start position. The
-    first five letters of this text string included the unencrypted key
-    identifier.
-- **start** the unencoded start position. This was not sent with the message but
-    is included here to verify an implementation of this method.
-- **clear** the unencrypted message. This can be used to verify an
-    implementation of this method.
+    - **text** - the message text encoded using the unencoded start position. The
+        first five letters of this text string included the unencrypted key
+        identifier.
+    - **start** - the unencoded start position. This was not sent with the message but
+        is included here to verify an implementation of this method.
+    - **clear** - the unencrypted message. This can be used to verify an
+        implementation of this method.
+
+---
+`generateMessages(sheet, count)`
+
+Call this method to create an array of messages based off a key sheet. This
+method calls `generateMessage` count times.
+
+#### **Parameters**
+- **sheet** - a key sheet as generated from `generateKeySheet`
+- **count** - the number of messages to create
+
+#### **Returns**
+An array of messages as returned from `generateKeySheet`
 
 #### **Example Message**
 
 ```json
-[
-    {
-        "key": "YSR",
-        "enc": "MHH",
-        "start": "GJC",
-        "text": "OAYXJ CTCBV BZRBS SORIL YVMMM LLIVS OBUYU VMQTJ GFSZU XYUDR GHKRX KRCDV QEZCH MDTAJ KZUXV TZPOA VSCFH ILWQC DJNAH PILTN MMLHK OULDS QIMCB NMTRZ OQFQY CVWVW QXEHU WCMKJ XGUSA YPBIE EXGKZ LZLUF NMJNB ISUWN DYOWW XUJNK VUYOV SJOSW MQNSP MUTAZ DQIXV RGJXM ",
-        "clear": "WHATD EVILW ASTTH ATTHU SHATH COZEN DYOUA THOOD MANBL INDEY ESWIT HOUTF EELIN GFEEL INGWI THOUT SIGHT EARSW ITHOU THAND SOREY ESSME LLING SANSA LLORB UTASI CKLYP ARTOF ONETR UESEN SECOU LDNOT SOMOP EOSHA MEWHE REIST HYBLU SHREB ELLIO USHEL LIFTH"
+{
+    "options": {
+        "reflector": "A",
+        "rotors": [
+            "IV",
+            "III",
+            "II"
+        ],
+        "ringOffsets": [
+            25,
+            11,
+            18
+        ],
+        "plugs": "AV XQ YK TD HE OB ZW FP IU CM"
     },
-    {
-        "key": "MYR",
-        "enc": "AJI",
-        "start": "ETH",
-        "text": "OAYXJ WPIFA NPUKR ZWSZG GXYZX ZYTMQ PHVNB CPHUA XEUVC VOGUZ LPQSP RFHTK ZNFHL OYGEU ZGOPG EFBTL ORNDH INNGD LDIAT DDPOP QZZKE XBUWI VCJOW LWDJO BLASV JTOMG LUDRC LIISC DJZES QZSSD GBYSG PUGHS EWADO KDSFP ZOLBL RPEYX YKQTF HOI",
-        "clear": "OUCAN STMUT INEIN AMATR ONSBO NESTO FLAMI NGYOU THLET VIRTU EBEAS WAXAN DMELT INHER OWNFI REPRO CLAIM NOSHA MEWHE NTHEC OMPUL SIVEA RDOUR GIVES THECH ARGES INCEF ROSTI TSELF ASACT IVELY DOTHB URNAN DREAS ONPAN DERSW ILL"
-    }
-]
+    "parts": [
+        {
+            "key": "VAH",
+            "enc": "WFL",
+            "start": "ZKY",
+            "text": "PYVJF SVGQI FUNUE RVYRN BPTJL TGGPW CAWXU NBAZS BTNUV XVEPE QOQGP AKMJM ILBYA MKMXD NVJMO HBVJB HBRZX QSPQX DFIBG JXOHN KQXTI OJBUP JWBCF UOMGJ XUJPP XBJEM LVKMA LZSKO VSOEC NIJFV TRLAO JLVOO TMQDU TYSWL HIAPE YYAQD QKANA IHVSG JMJIC MZOSP POWJI IZJMF VKARE YINLU SYBZY XKWAC UIHVO MKCFH BEPUG LAXWP ",
+            "clear": "HEMADECONFESSIONOFYOUANDGAVEYOUSUCHAMASTERLYREPORTFORARTANDEXERCISEINYOURDEFENCEANDFORYOURRAPIERMOSTESPECIALLYTHATHECRIEDOUTTWOULDBEASIGHTINDEEDIFONECOULDMATCHYOUTHESCRIMERSOFTHEIRNATIONHESWOREHADHADNEITHERMOTIONGUARDNOREYEIFYOUOPPOSEDTHEMSIRTHI"
+        },
+        {
+            "key": "TBR",
+            "enc": "AZP",
+            "start": "CBC",
+            "text": "RRRNG VYBRV RPVBF KFHAJ TPUHW WGZJU BWXGH LGNKW RYZYP DGBYC SUTEX KJSUX UDWER YJHDB HDSZH PARUG EPDXE YXBDX TBCKD JKYDY VLZVV ACYVD MTLEC BSQEP ACKVV YKJAZ SHQQT GMBQB T",
+            "clear": "REPORTOFHISDIDHAMLETSOENVENOMWITHHISENVYTHATHECOULDNOTHINGDOBUTWISHANDBEGYOURSUDDENCOMINGOERTOPLAYWITHHIMNOWOUTOFTHISWHATOUTOFTHISMYLORD"
+        }
+    ]
+}
 ```

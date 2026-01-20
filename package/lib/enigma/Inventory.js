@@ -9,8 +9,8 @@ class Inventory {
 	 */
 	constructor() {
 		this.entryDiscs = {};
+		/** @type {{[name: string]: RouterInventorySpec}}*/
 		this.rotors = {};
-		this.fixedRotors = {};
 		this.reflectors = {};
 	}
 
@@ -104,10 +104,30 @@ class Inventory {
 	/**
 	 * Call this method to get the names of all the rotors in the inventory
 	 *
-	 * @returns {Array.<String>} the names of the rotors
+	 * @param {boolean} [fixed] - if specified it returns only the names of
+	 * routers filtered on if they are fixed or not, otherwise it returns all
+	 *
+	 * @returns {string[]} the names of the rotors
 	 */
-	getRotorNames() {
-		return Object.keys(this.rotors);
+	getRotorNames(fixed) {
+		if (fixed === undefined) {
+			return Object.keys(this.rotors);
+		}
+
+		let entries = Object.entries(this.rotors);
+
+		entries = entries.filter(([_name, rotor]) => {
+			if (rotor.turnovers === '' && fixed) {
+				return true;
+			}
+			if (rotor.turnovers !== '' && !fixed) {
+				return true;
+			}
+
+			return false;
+		})
+
+		return entries.map(([name, _router]) => name);
 	}
 }
 

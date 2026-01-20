@@ -10,7 +10,7 @@ export default class PlugBoard extends Encoder {
 	 * Constructor for the plugboard.
 	 *
 	 * @param {String} name the name for the plugboard, defaults to 'plugboard'
-	 * @param {Object} [settings] the settings for the plugboard. Only needed if
+	 * @param {EncoderSetup} [settings] the settings for the plugboard. Only needed if
 	 * 	using an alternate alphabet
 	 */
 	constructor(name = 'plugboard', settings = {}) {
@@ -19,36 +19,38 @@ export default class PlugBoard extends Encoder {
 		var {alphabet = STANDARD_ALPHABET, map} = settings;
 		this.alphabet = alphabet;
 		this.map = map || alphabet;
+		this.rightMap = [];
+		this.leftMap = [];
+		this.plugs = '';
 	}
 
 	/**
 	 * Call this method to configure the plug board. This will be used to
 	 * provide the plug connections
 	 *
-	 * @param {Object} [settings] the configuration options for the plug
+	 * @param {Plugs} plugs the configuration options for the plug
 	 * 	board
-	 * @property {Array.<String>|String} [plugs] either an array of strings or a
-	 * 	single string. If it is a string, it must be a space separated list of
-	 * 	letter pairs that connects one input letter to another. If it is an
-	 * array then then each item is a pair of letters to specify how the plugs
-	 * are connected
 	 */
-	configure(settings = {}) {
-		var map = this.map;
-		var {plugs = []} = settings;
+	configure(plugs = []) {
+		let map = this.map;
+		/** @type {string[]} */
 
-		if (typeof plugs === 'string') plugs = plugs.split(' ');
-		plugs.forEach(function(plug) {
-			var firstIdx = this.alphabet.indexOf(plug[0]);
-			var secondIdx = this.alphabet.indexOf(plug[1]);
-			var first = map[firstIdx];
-			var second = map[secondIdx];
+		if (typeof plugs === 'string') {
+			plugs = plugs.split(' ');
+		}
+		plugs.forEach((plug) => {
+			let firstIdx = this.alphabet.indexOf(plug[0]);
+			let secondIdx = this.alphabet.indexOf(plug[1]);
+			let first = map[firstIdx];
+			let second = map[secondIdx];
 			map = map.slice(0, firstIdx) + second + map.slice(firstIdx + 1);
 			map = map.slice(0, secondIdx) + first + map.slice(secondIdx + 1);
-		}, this)
+		})
 
 		this.rightMap = this.makeMap(map);
 		this.leftMap = this.makeReverseMap(this.rightMap);
+
+		this.plugs = plugs.join(' ');
 	}
 
 	/**
@@ -69,6 +71,7 @@ export default class PlugBoard extends Encoder {
 				output: result,
 			}
 		);
+
 		return result;
 	}
 }

@@ -1,20 +1,19 @@
 import { STANDARD_ALPHABET } from "./consts.js";
 
-/**
- * This is the listener for Enigma and component events
- * @callback Listener
- * @param {String} event a string that identifies the event being fired
- * @param {String} name the name of the component firing the event
- * @param {String} message a human readable description of the event details
- * @param {Object} into event specific data for the event
- */
 
 /**
  * This is the base class for an encoder. The default implementation of the
  * encode method is to return the input as the output
  */
 export default class Encoder {
-	constructor(name, {cb, alphabet = STANDARD_ALPHABET}) {
+	/**
+	 * Constructor for the base encoder
+	 *
+	 * @param {string} name
+	 * @param {EncoderSetup} settings
+	 */
+	constructor(name, settings) {
+		let {cb, alphabet = STANDARD_ALPHABET} = settings;
 		this.name = name;
 		this.alphabet = alphabet;
 		this.contactCount = alphabet.length;
@@ -69,13 +68,13 @@ export default class Encoder {
 	 * the given direction The default encode method just passes the input value
 	 * through
 	 *
-	 * @param {String} direction either right for moving towards the reflector
+	 * @param {Direction} _direction either right for moving towards the reflector
 	 * 	or left if moving back
 	 * @param {Number} input the specific connection receiving an input
 	 *
 	 * @returns {Number} The translated output connector number
 	 */
-	encode(direction, input) {
+	encode(_direction, input) {
 		return input;
 	}
 
@@ -93,7 +92,7 @@ export default class Encoder {
 	 * Call this method to call the event listener
 	 *
 	 * @param {String} name the name of the event
-	 * @param  {...any} rest the parameters to pass to the callback
+	 * @param  {unknown[]} rest the parameters to pass to the callback
 	 */
 	fire(name, ...rest) {
 		if (this.cb) this.cb(name, ...rest);
