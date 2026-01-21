@@ -4,6 +4,7 @@
 
 # Table of Contents
 [Getting Started](#getting-started)
+
 [Simulation](#simulation)
 - [Events](#events)
 - [Plugboard](#plugboard)

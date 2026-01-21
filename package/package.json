@@ -1,7 +1,7 @@
 {
   "name": "@ondoher/enigma",
-  "version": "0.1.7",
-  "description": "Tools and documentation to help in building and testing an Enigma Machine simulator.",
+  "version": "1.0.2",
+  "description": "Enigma machine simulator implementation with tools and documentation to help you build your own.",
   "main": "./lib/index.js",
   "scripts": {
     "test": "jasmine"
@@ -12,18 +12,19 @@
     "enigma",
     "enigma-machine",
     "enigma machine",
+    "enigma codebook",
+    "education",
     "simulation",
     "cryptography"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ondoher/enigma.git",
+    "url": "git+https://github.com/Ondoher/enigma.git",
     "directory": "package"
   },
   "homepage": "https://github.com/Ondoher/enigma#readme",
   "type": "module",
   "devDependencies": {
-    "@types/jasmine": "^4.6.6",
     "jasmine": "^4.5.0",
     "jasmine-console-reporter": "^3.1.0"
   }
