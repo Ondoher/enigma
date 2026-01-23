@@ -17,8 +17,8 @@ export default class Rotor extends Encoder {
 	 * define the the rotor and how it is configured.
 	 */
 	constructor(name, settings) {
-		super(name, settings);
-		var { map = STANDARD_ALPHABET, turnovers = '', ringSetting = 0} = settings
+		super(name, "Rotor", settings);
+		let { map = STANDARD_ALPHABET, turnovers = '', ringSetting = 0} = settings
 
 		this.map = [...map];
 		this.rightMap = this.makeMap(map);
@@ -29,10 +29,13 @@ export default class Rotor extends Encoder {
 		this.turnoverLookup = this.makeMap(turnovers);
 		this.offset = 0;
 		if (turnovers === '') this.fixed = true;
-		this.turnovers = this.turnoverLookup.reduce(function(turnovers, turnover) {
-			turnovers[turnover] = true;
+		this.turnovers = turnovers;
+		/** @type {Set<number>} */
+		let turnoverSet = new Set();
+		this._turnovers = this.turnoverLookup.reduce((turnovers, turnover) => {
+			turnovers.add(turnover)
 			return turnovers;
-		}.bind(this), {});
+		}, turnoverSet);
 	}
 
 	/**
@@ -45,7 +48,7 @@ export default class Rotor extends Encoder {
 	 * ring setting.
 	 */
 	setStartPosition(connector) {
-		var pos = this.alphabet.indexOf(connector);
+		let pos = this.alphabet.indexOf(connector);
 		this.offset = this.normalize(pos - this.ringOffset);
 	}
 
@@ -63,54 +66,49 @@ export default class Rotor extends Encoder {
 	 * @returns {Number} the output connector in physical space.
 	 */
 	encode(direction, input) {
-		var map = direction === 'right' ? this.rightMap : this.leftMap;
-		var evName = direction === 'right' ? 'encode-right' : 'encode-left';
+		let map = direction === 'right' ? this.rightMap : this.leftMap;
 
 		//find the logical position of the input connector in the wiring map
-		var index = this.normalize(input + this.offset);
+		let index = this.normalize(input + this.offset);
 
 		// get the logical output connector and convert that to the physical
 		// output connector
-		var output = map[index];
-		var result = this.normalize(output - this.offset);
+		let output = map[index];
+		let result = this.normalize(output - this.offset);
 
-		this.fire(evName, this.name,
-			`${evName} ${this.name}, input: ${input} output: ${result} relative input: ${index}, relative output: ${output} rotation: ${this.offset}`,
-			{
-				input : input,
-				output: result,
-				logicalInput: index,
-				logicalOutput: output,
-				rotation: this.offset,
-			}
-		);
-
+		this.fireEncodeSet(input, result, direction);
 		return result;
 	}
 
 	/**
 	 * Call this method to step the rotor
 	 *
-	 * @returns {Boolean} true true if the next rotor should be stepped
+	 * @returns {Boolean} true if the next rotor should be stepped
 	 */
 	step() {
 		// Because the turnover notch is attached to the outer ring, and the
 		// logical coordinates are based on the wiring, the logical position of
 		// the notch for turnover needs to be adjusted to remove the ring offset.
+		let start = this.offset;
 		this.offset = this.normalize(this.offset + 1);
-		var turnoverOffset = this.normalize(this.offset + this.ringOffset);
+		let stop = this.offset;
+		let turnoverOffset = this.normalize(this.offset + this.ringOffset);
+
 
 		// turnover happens when we step past the turnover point
-		var turnover = this.turnovers[this.normalize(turnoverOffset - 1)];
+		let turnover = this._turnovers.has(this.normalize(turnoverOffset - 1));
 
-		this.fire('step', this.name,
-			`step ${this.name}, ${this.offset} ${this.normalize(this.offset + this.ringOffset)} ${turnoverOffset} ${Boolean(turnover)}`,
-			{
-				rotation: this.offset,
-				ringSetting: this.ringOffset,
-				turnover: Boolean(turnover),
-			}
-		);
+		/** @type {EventData} */
+		let eventData = {
+			name: this.name,
+			type: this.type,
+			description: `step ${this.name}, ${this.offset} ${this.normalize(this.offset + this.ringOffset)} ${turnoverOffset} ${Boolean(turnover)}`,
+			event: 'step',
+			turnover, start, stop
+		}
+
+		// console.log("firing", eventData);
+		this.fire('step', this.name, eventData);
 
 		return turnover;
 	}
@@ -123,10 +121,18 @@ export default class Rotor extends Encoder {
 	 * @returns true if this rotor will turnover on the next step
 	 */
 	willTurnover() {
-		var turnoverOffset = this.normalize(this.offset + this.ringOffset);
+		let turnoverOffset = this.normalize(this.offset + this.ringOffset);
 
 		// double stepping happens when we step to the turnover point
-		return this.turnovers[turnoverOffset];
+		return this._turnovers.has(turnoverOffset);
+	}
+
+	shouldTurnover() {
+		let turnoverOffset = this.normalize(this.offset + 1 + this.ringOffset);
+
+		// double stepping happens when we step to the turnover point
+		return this._turnovers.has(turnoverOffset);
+
 	}
 
 	/**

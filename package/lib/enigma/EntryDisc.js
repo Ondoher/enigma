@@ -15,7 +15,7 @@ export default class EntryDisc extends Encoder {
 	 * 	between input and output contacts
 	 */
 	constructor(name, settings) {
-		super(name, settings);
+		super(name, "Entry Wheel", settings);
 		var {map = STANDARD_ALPHABET} = settings;
 		this.rightMap = this.makeMap(map);
 		this.leftMap = this.makeReverseMap(this.rightMap);
@@ -31,14 +31,8 @@ export default class EntryDisc extends Encoder {
 	 */
 	encode(direction, input) {
 		var result = direction === 'right' ? this.rightMap[input]: this.leftMap[input];
-		var evName = direction === 'right' ? 'encode-right' : 'encode-left';
 
-		this.fire(evName, this.name,
-			`${evName} ${this.name}, input: ${input}, output: ${result}`, {
-				input: input,
-				output: result,
-			}
-		);
+		this.fireEncodeSet(input, result, direction);
 		return result;
 	}
 }

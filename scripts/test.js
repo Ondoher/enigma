@@ -3,10 +3,15 @@ import Enigma from "../package/lib/enigma/Enigma.js";
 import Generator from '../package/lib/generator/Generator.js';
 import CodeBook from '../package/lib/generator/CodeBook.js';
 import { writeFile } from "node:fs/promises";
+import { enigmaData } from './EnigmaData.js';
 
 const WRITE = false;
 const GENERATE_MESSAGES = false;
-const GENERATE_CODEBOOK = true;
+const GENERATE_CODEBOOK = false;
+const SHOW_EVENTS = true;
+const EVENT_TYPES = ["translate"];
+const EVENT_MESSAGE = enigmaData.sampleFieldMessages[0];
+
 
 const TEST_MESSAGE_FILE = './test-messages.json';
 const TEST_CODEBOOK_FILE = './test-codebook.json';
@@ -68,10 +73,31 @@ async function codebook(count) {
 	}
 }
 
+function showEvents() {
+	let enigma = new Enigma(EVENT_MESSAGE.model, {reflector: EVENT_MESSAGE.setup.reflector});
+	enigma.configure({plugs: EVENT_MESSAGE.setup.plugs, rotors: EVENT_MESSAGE.setup.rotors, ringSettings: EVENT_MESSAGE.setup.ringSettings});
+
+	enigma.listen('showEvents', (event, name, data) => {
+		if (EVENT_TYPES.includes(event)) {
+			console.log(data.description);
+		}
+	})
+
+	let encoded = enigma.encode(EVENT_MESSAGE.message.key, EVENT_MESSAGE.message.decoded);
+
+	console.log(encoded);
+	console.log(EVENT_MESSAGE.message.encoded);
+}
+
+
 if (GENERATE_MESSAGES) {
 	await generateMessages(20);
 }
 
 if (GENERATE_CODEBOOK) {
 	await codebook(20);
+}
+
+if (SHOW_EVENTS) {
+	showEvents();
 }

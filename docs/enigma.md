@@ -509,7 +509,7 @@ device which are also given by name.
 An example of this might be
 
 ```javascript
-var Enigma = new Enigma({reflector: 'B'});
+var Enigma = new Enigma("I", {reflector: 'B'});
 
 Enigma.configure({
     rotors: ['II', 'I', 'V'],

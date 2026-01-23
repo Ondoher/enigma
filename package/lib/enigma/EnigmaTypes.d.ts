@@ -1,21 +1,6 @@
-// type Listener = (
-// 	/** name of the event being fired*/
-// 	event: string,
-
-// 	/** the name of th component firing the event */
-// 	name: string,
-
-// 	/** a human readable description of the event */
-// 	message: string,
-
-// 	/** event specific data */
-// 	info: object
-
-// ) => void;
 
 
-
-type Listener = (...params: unknown[]) => void;
+type ComponentType = ("Entry Wheel" | "Plugboard" | "Reflector" | "Rotor" | "Enigma")
 
 interface EncoderSetup {
 	/** if specified defines an alternate alphabet for the enigma */
@@ -98,4 +83,111 @@ interface RotorSetup extends EncoderSetup {
 	turnovers?: string;
 }
 
-type Direction = ("right"|"left")
+/**
+ * Defines the possible directions for a translation.
+ *
+ * - **right** - the signal is moving from the right to the left
+ * - **left** - the signal is moving from left to right
+ * - **turn-around** - the signal is transitioning between directions, this is
+ * sent from the reflector
+ */
+type Direction = ("right" | "left" | "turn-around" | "end-to-end");
+
+/**
+ * Defines the possible events sent from the enigma components.
+ *
+ * **translate** - fired when the input signal is changed from one value to another
+ * **input** - fired when a signal first enters the component
+ * **output** - fired when the signal exits the component
+ *
+ */
+type EventName = ("translate" | "input" | "output" | "step" | "double-step");
+
+/**
+ * Defines the common data for an event
+ */
+type EventBase = {
+	/** the name of the component sending the event */
+	name: string;
+
+	type: ComponentType;
+
+	/** a human readable description of the event */
+	description: string;
+}
+
+/**
+ * Defines the data sent for a translate event
+ */
+type TranslateData = {
+	/** the event name */
+	event: EventName = "translate";
+
+	/** the direction the signal was sent */
+	direction: Direction;
+
+	/** the starting value */
+	start: number | string;
+
+	/** the translated value */
+	stop: number | string;
+}
+
+/**
+ * defines the data sent for a rotor step
+ */
+type StepData = {
+	/** the event name */
+	event: EventName = "step";
+
+	/** the starting rotor position */
+	start: number | string;
+
+	/** the ending rotor position */
+	stop: number | string
+
+	/** the locations of the turnover points for this rotor */
+	turnover: boolean;
+}
+
+type DoubleStepData = {
+	eventName: EventName = "double-step",
+	rotor: string;
+	offset: number;
+}
+
+/**
+ * Defines the data sent with an input event
+ */
+type InputData = {
+	/** the event name */
+	event: EventName = "input";
+
+	/** the input connection */
+	input: number | string;
+}
+
+/**
+ * Defines the data sent with an output event
+ */
+type OutputData = {
+	/** the event name */
+	event: EventName = "output";
+
+	/** the output connection */
+	output: number | string;
+}
+
+/** Defines the discriminated union for all the event data */
+type EventData = EventBase & (TranslateData | StepData | InputData | OutputData);
+
+type Listener = (
+	/** name of the event being fired*/
+	event: string,
+
+	/** the name of th component firing the event */
+	name: string,
+
+	/** event specific data */
+	data:  EventData
+) => void;

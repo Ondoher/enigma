@@ -14,7 +14,7 @@ export default class PlugBoard extends Encoder {
 	 * 	using an alternate alphabet
 	 */
 	constructor(name = 'plugboard', settings = {}) {
-		super(name, settings);
+		super(name, "Plugboard", settings);
 
 		var {alphabet = STANDARD_ALPHABET, map} = settings;
 		this.alphabet = alphabet;
@@ -64,13 +64,8 @@ export default class PlugBoard extends Encoder {
 	 */
 	encode(direction, input) {
 		var result = direction === 'right' ? this.rightMap[input]: this.leftMap[input];
-		var evName = direction === 'right' ? 'encode-right' : 'encode-left';
-		this.fire(evName, this.name,
-			`${evName} ${this.name}, input: ${input}, output: ${result}`, {
-				input: input,
-				output: result,
-			}
-		);
+
+		this.fireEncodeSet(input, result, direction);
 
 		return result;
 	}

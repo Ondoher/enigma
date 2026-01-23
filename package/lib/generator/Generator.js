@@ -136,7 +136,7 @@ export default class Generator {
 	 */
 	createRandomEnigma(model = "Enigma", reflectors = ['A', 'B', 'C']) {
 		let reflector = Random.pickOne(reflectors);
-		return new Enigma({model, reflector});
+		return new Enigma(model, {model, reflector});
 	}
 
 	/**

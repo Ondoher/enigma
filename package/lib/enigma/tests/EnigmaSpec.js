@@ -5,11 +5,12 @@ import Enigma from "../Enigma.js";
 import { enigmaData } from './EnigmaData.js';
 
 describe('Enigma Test Cases', function() {
+	/** @type {Enigma} */
 	var enigma;
 
 	function messageLoop(messages, which, cb) {
 		return messages.find(function(message) {
-			var enigma = new Enigma({
+			var enigma = new Enigma("Test", {
 				reflector: message.setup.reflector
 			});
 
@@ -29,39 +30,42 @@ describe('Enigma Test Cases', function() {
 	describe('Stepping', function() {
 		var steps = {}
 		beforeEach(function() {
-			enigma = new Enigma({
+			enigma = new Enigma("I", {
 				reflector: 'B',
 			});
 
 			enigma.configure({rotors: ['I', 'II', 'III']});
 
-			enigma.listen(function(event, name, message, info) {
+			listen()
+		});
+
+		function listen() {
+			enigma.listen('test', (event, name, data) => {
 				if (event === 'step') {
 					steps[name] = steps[name] || [];
-					steps[name].push(info);
+					steps[name].push(data);
 				}
 			})
-
-		});
+		}
 
 		it ('should step only the right-most rotor when not at turnover', function() {
 			steps = {};
 			enigma.encode('AAA', 'A');
 			var stepped = Object.keys(steps);
 			expect(stepped.length).toBe(1);
-			expect(stepped[0]).toBe('rotor-III');
+			expect(stepped[0]).toBe('III');
 		});
 
 		it ('should step the next rotor when the previous turns over', function() {
 			steps = {};
 			enigma.encode('AAV', 'A');
-			expect(steps['rotor-II'].length).toBe(1);
+			expect(steps['II'].length).toBe(1);
 		});
 
 		it ('should double step when reaching the turn over', function() {
 			steps = {};
 			enigma.encode('ADV', 'AA');
-			expect(steps['rotor-II'].length).toBe(2);
+			expect(steps['II'].length).toBe(2);
 		});
 
 		it ('should double step on first step', function() {
@@ -69,8 +73,10 @@ describe('Enigma Test Cases', function() {
 
 			enigma.configure({rotors: ['III', 'VI', 'VIII'], ringSettings: [1, 8, 13]});
 
+			listen();
+
 			enigma.encode('UZV', 'AA');
-			expect(steps['rotor-VI'].length).toBe(1);
+			expect(steps['VI'].length).toBe(1);
 		});
 	})
 

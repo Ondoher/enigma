@@ -4,7 +4,7 @@ export const rotorData = {
 		map: 'BCDA',
 		reverseMap: [3, 0, 1, 2],
 		turnovers: 'AM',
-		turnoversMap: {0: true, 12: true}
+		turnoversMap: [0, 12]
 	},
 	I: {
 		map: 'EKMFLGDQVZNTOWYHXUSPAIBRCJ',

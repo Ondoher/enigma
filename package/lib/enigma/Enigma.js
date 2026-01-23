@@ -11,47 +11,33 @@ import Encoder from "./Encoder.js";
  * parameters to the constructor and the config method reference the names of
  * standard Enigma parts. These are retrieved from the Inventory instance
  */
-export default class Enigma {
+export default class Enigma extends Encoder {
 	/**
 	 * The constructor for the Enigma. This represents the unconfigurable
 	 * settings of the device.
 	 *
+	 * @param {string} name
 	 * @param {EnigmaSetup} settings
 	 */
-	constructor(settings) {
-		let {entryDisc = 'default', reflector, alphabet = STANDARD_ALPHABET, model = "Enigma"} = settings;
+	constructor(name,  settings) {
+		super(name, "Enigma", settings)
+		let {entryDisc = 'default', reflector, alphabet = STANDARD_ALPHABET} = settings;
 		let entryDiscSettings = inventory.getEntryDisc(entryDisc)
 
 		let reflectorSettings = inventory.getReflector(reflector)
 		this.alphabet = alphabet;
-		this.plugboard = new PlugBoard('plugboard', {});
-		this.entryDisc = new EntryDisc('entry-disc', entryDiscSettings);
-		this.reflector = new Reflector('reflector', reflectorSettings)
+		this.plugboard = new PlugBoard('default', {});
+		this.entryDisc = new EntryDisc('default', entryDiscSettings);
+		this.reflector = new Reflector(reflector, reflectorSettings)
 		this.length = alphabet.length;
 		/** @type {Rotor[]} */
 		this._rotors = [];
 		/** @type {{[rotor: number]: boolean}} */
 		this.pending = [];
-		this.name = model;
 		/** @type {Encoder[]} */
 		this.encoders = [];
 		/**@type {SimplifiedConfiguration & {reflector: string}} */
 		this._configuration = {reflector}
-	}
-
-	/**
-	 * Call this method to normalize a connector number to be within the
-	 * the length of the current alphabet
-	 *
-	 * @param {Number} connector the number to be normalized
-	 *
-	 * @returns {Number} the normalized connector number
-	 */
-	normalize(connector) {
-		connector += this.length;
-		connector = connector % this.length
-
-		return connector;
 	}
 
 	/**
@@ -94,7 +80,7 @@ export default class Enigma {
 		/** @type {number[]} */
 		let ringOffsets = []
 
-		// because the rotors are specified in the reverse other they are used,
+		// because the rotors are specified in the reverse order they are used,
 		// we have to do the same for the ringSettings.
 		if (Array.isArray(ringSettings)) {
 			ringSettings = ringSettings.reverse();
@@ -114,7 +100,7 @@ export default class Enigma {
 		}
 
 		this._rotors = useRotors.map(function(name, idx) {
-			return new Rotor(`rotor-${name}`, {...inventory.getRotor(name), alphabet: this.alphabet, ringSetting: ringOffsets[idx], cb: this.cb});
+			return new Rotor(`${name}`, {...inventory.getRotor(name), alphabet: this.alphabet, ringSetting: ringOffsets[idx], cb: this.cb});
 		}, this);
 
 		this.encoders = [this.plugboard, this.entryDisc, ...this.rotors];
@@ -131,19 +117,28 @@ export default class Enigma {
 	 * stepping between all rotors
 	 */
 	step() {
-		this._rotors.forEach(function(rotor, idx) {
+		this._rotors.forEach((rotor, idx) => {
 			if (rotor.isFixed()) return;
 
 			// This is the double stepping. Only do this for the middle rotor
 			if (rotor.willTurnover() && idx === 1) {
 				this.pending[idx] = true
+				/** @type {EventData} */
+				let eventData = {
+					name: rotor.name,
+					event: "double-step",
+					offset: rotor.offset,
+					description: `rotor ${rotor.name} double stepping from ${rotor.offset}`
+				}
+
+				this.fire('double-step', rotor.name, eventData);
 			};
 
 			if (this.pending[idx]) {
 				this.pending[idx] = false;
 				if (rotor.step()) this.pending[idx + 1] = true;
 			}
-		}, this);
+		});
 
 		// The first rotor is always stepping
 		this.pending[0] = true;
@@ -190,23 +185,22 @@ export default class Enigma {
 	 */
 	keyPress(letter) {
 		letter = letter.toUpperCase();
-		if (letter.length !== 1 || this.alphabet.indexOf(letter) === -1) {
-			if (letter !== ' ')
-				console.warn(`Unexpected character ${letter}`);
+		if (!this.verifyLetter(letter)) {
 			return;
 		}
 
-		this.fire('input', this.name, `input ${letter}`, {letter})
+		let connector = this.letterToConnector(letter);
+
 		this.step();
 
 		// encode to the right
-		let connector =  this.encoders.reduce(function(connector, encoder, idx) {
+		connector =  this.encoders.reduce(function(connector, encoder, idx) {
 			connector = encoder.encode('right', connector);
 			return connector;
 		}.bind(this), this.alphabet.indexOf(letter));
 
 		// reflector
-		connector = this.reflector.encode('right', connector);
+		connector = this.reflector.encode('turn-around', connector);
 
 		// encode to the left
 		connector = this.encoders.reduceRight(function(connector, encoder) {
@@ -214,9 +208,10 @@ export default class Enigma {
 			return connector;
 		}.bind(this), connector)
 
-		letter = this.alphabet[connector];
-		this.fire('output', this.name, `output ${letter}`, {letter})
-		return letter;
+		const outputLetter = this.connectorToLetter(connector);
+
+		this.fireEncodeSet(letter, outputLetter, "end-to-end")
+		return outputLetter;
 	}
 
 	/**
@@ -238,27 +233,17 @@ export default class Enigma {
 	}
 
 	/**
-	 * Call this method to call the event listener
 	 *
-	 * @param {String} type the name of the event
-	 * @param  {...any} rest the parameters to pass to the callback
+	 * @param {string} name
+	 * @param {Listener} cb
 	 */
-	fire(type, ...rest) {
-		if (this.cb) this.cb(type, ...rest);
-	}
+	listen(name, cb) {
+		super.listen(name, cb);
 
-	/**
-	 * Call this method to set a function to be called when important events
-	 * happen to a component.
+		for (let encoder of this.encoders) {
+			encoder.listen(name, cb)
+		}
 
-	 * @param {Listener} cb the function to be called.
-	 */
-	listen(cb) {
-		this.cb = cb;
-		this.encoders.forEach(function(encoder) {
-			encoder.listen(cb);
-		});
-
-		this.reflector.listen(cb);
+		this.reflector.listen(name, cb);
 	}
 }

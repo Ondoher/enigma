@@ -13,7 +13,7 @@ export default class Reflector extends Encoder {
 	 * @param {EncoderSetup} settings The definition of the reflector
 	 */
 	constructor(name, settings) {
-		super(name, settings);
+		super(name, "Reflector", settings);
 		var {map = STANDARD_ALPHABET} = settings;
 
  		this.map = this.makeMap(map);
@@ -30,14 +30,10 @@ export default class Reflector extends Encoder {
 	 *
 	 * @returns {Number} the mapped output connector
 	 */
-	encode(_direction, input) {
+	encode(direction, input) {
 		var result = this.map[input];
-		this.fire('encode', this.name,
-			`encode ${this.name} ${input} ${result}`,
-			{
-				input: input,
-				output: result,
-			});
+
+		this.fireEncodeSet(input, result, direction)
 
 		return result;
 	}

@@ -10,14 +10,21 @@ export default class Encoder {
 	 * Constructor for the base encoder
 	 *
 	 * @param {string} name
+	 * @param {ComponentType} type
 	 * @param {EncoderSetup} settings
 	 */
-	constructor(name, settings) {
+	constructor(name, type, settings) {
 		let {cb, alphabet = STANDARD_ALPHABET} = settings;
 		this.name = name;
+		this.type = type;
 		this.alphabet = alphabet;
 		this.contactCount = alphabet.length;
-		this.cb = cb;
+		/** @type {{[name: string]: Listener}} */
+		this.listeners = {}
+
+		if (cb) {
+			this.listeners["constructor"] = cb;
+		}
 	}
 
 	/**
@@ -29,6 +36,52 @@ export default class Encoder {
 	 */
 	normalize(connector) {
 		return (connector + this.contactCount * 2) % this.contactCount;
+	}
+
+	/**
+	 *
+	 * @param {string} letter
+	 *
+	 * @returns {boolean}
+	 */
+	verifyLetter(letter) {
+		if (letter.length !== 1 || this.alphabet.indexOf(letter) === -1) {
+			if (letter !== ' ') {
+				console.warn(`Unexpected character ${letter}`);
+			}
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Call this method to convert a letter to a connector value
+	 *
+	 * @param {string} letter
+	 * @returns {number | undefined}
+	 */
+	letterToConnector(letter) {
+		if (!this.verifyLetter(letter)) {
+			return;
+		}
+
+		return this.alphabet.indexOf(letter);
+	}
+
+	/**
+	 * Call this method to turn a connector to a letter value
+	 *
+	 * @param {number} connector
+	 * @returns {string | undefined}
+	 */
+	connectorToLetter(connector) {
+		if (connector >= this.alphabet.length) {
+			console.warn(`Unexpected connector ${connector}`);
+
+		}
+
+		return this.alphabet[connector];
 	}
 
 	/**
@@ -79,23 +132,78 @@ export default class Encoder {
 	}
 
 	/**
-	 * Call this method to set a function to be called when important events
-	 * happen to a component.
-
-	 * @param {Listener} cb the function to be called.
+	 *
+	 * @param {number | string} start
+	 * @param {number | string} stop
+	 * @param {Direction} direction
 	 */
-	listen(cb) {
-		this.cb = cb;
+	fireEncodeSet(start, stop, direction) {
+		/** @type {EventData} */
+		let eventData = {
+			name: this.name,
+			type: this.type,
+			description: `input: ${start}`,
+			event: 'input',
+			input: start
+		}
+
+		this.fire('input', this.name, eventData);
+
+		if (typeof start === 'number') start = this.connectorToLetter(start)
+		if (typeof stop === 'number') stop = this.connectorToLetter(stop)
+		eventData = {
+			name: this.name,
+			type: this.type,
+			description: `${this.type}: ${this.name} translate ${start} to ${stop}`,
+			event: 'translate',
+			direction,
+			start,
+			stop
+		}
+		this.fire('translate', this.name, eventData);
+
+		eventData = {
+			name: this.name,
+			type: this.type,
+			description: `output: ${stop}`,
+			event: 'output',
+			output: stop
+		}
+		this.fire('output', this.name, eventData);
 	}
 
 	/**
-	 * Call this method to call the event listener
+	 * Call this method to add a function to be called when important events
+	 * happen to a component. The name can be used to later remove the listener
 	 *
-	 * @param {String} name the name of the event
-	 * @param  {unknown[]} rest the parameters to pass to the callback
+	 * @param {string} name - the name of the listener
+	 * @param {Listener} cb - the function to be called.
 	 */
-	fire(name, ...rest) {
-		if (this.cb) this.cb(name, ...rest);
+	listen(name, cb) {
+		this.listeners[name] = cb;
+	}
+
+	/**
+	 * Call this method to remove a listener
+	 *
+	 * @param {string} name - the name of the listener
+	 */
+	unlisten(name) {
+		delete this.listeners[name];
+	}
+
+	/**
+	 * Call this method to call any event listeners
+	 *
+	 * @param {EventName} event - the event being fired
+	 * @param {String} name - the name of the component firing the event
+	 * @param {EventData} data - the event data
+	 */
+	fire(event, name, data) {
+		let listeners = Object.values(this.listeners);
+		for (let cb of listeners) {
+			cb(event, name, data)
+		}
 	}
 
 }

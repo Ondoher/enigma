@@ -38,7 +38,7 @@ You can then import this into your code like this:
 ```JavaScript
 import {Enigma} from '@ondoher/enigma';
 
-var enigma = new Enigma({reflector: 'B'});
+var enigma = new Enigma("I", {reflector: 'B'});
 ```
 
 In addition to this api, there is also [documentation](https://github.com/Ondoher/enigma/blob/main/docs/enigma.md)
@@ -420,7 +420,7 @@ An array of the installed rotors
 ```javascript
 import {Enigma} from '@ondoher/enigma';
 
-var enigma = new Enigma({reflector: 'B'});
+var enigma = new Enigma("I", {reflector: 'B'});
 
 enigma.configure({
     rotors: ['III', 'VI', 'VIII'],

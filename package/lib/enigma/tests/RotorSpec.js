@@ -29,7 +29,9 @@ describe('Rotor Test Cases', function() {
 				turnovers: rotorData.createData.turnovers,
 			});
 
-			expect(rotor.turnovers).toEqual(rotorData.createData.turnoversMap);
+			let turnovers = [...rotor._turnovers];
+
+			expect(turnovers).toEqual(rotorData.createData.turnoversMap);
 		})
 	})
 

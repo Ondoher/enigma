@@ -1,3 +1,9 @@
 {
-
+  "compilerOptions": {
+    "target": "es2020", // Or a newer version like "es2020"
+    "module": "commonjs"
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
