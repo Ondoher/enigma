@@ -18,12 +18,12 @@ const TEST_CODEBOOK_FILE = './test-codebook.json';
 
 /**
  *
- * @param {string} model
+ * @param {Model} model
  * @param {number} count
- * @param {GeneratedMessage[]} list
+ * @param {(GeneratedMessage & {model: Model})[]} list
  */
 function generateForModel(model, count, list) {
-	var generator = new Generator();
+	let generator = new Generator();
 
 	let {reflectors, rotors, fixed} = generator.getModelOptions(model);
 	let enigma = generator.createRandomEnigma(model, reflectors)
@@ -63,7 +63,7 @@ async function generateMessages(count) {
  * @param {number} count
  */
 async function codebook(count) {
-	var generator = new Generator();
+	let generator = new Generator();
 
 	let {reflectors} = generator.getModelOptions("I");
 	let enigma = generator.createRandomEnigma("I", reflectors)

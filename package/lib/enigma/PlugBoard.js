@@ -9,14 +9,14 @@ export default class PlugBoard extends Encoder {
 	/**
 	 * Constructor for the plugboard.
 	 *
-	 * @param {String} name the name for the plugboard, defaults to 'plugboard'
-	 * @param {EncoderSetup} [settings] the settings for the plugboard. Only needed if
+	 * @param {String} name - the name for the plugboard, defaults to 'plugboard'
+	 * @param {EncoderSetup} [settings] - the settings for the plugboard. Only needed if
 	 * 	using an alternate alphabet
 	 */
 	constructor(name = 'plugboard', settings = {}) {
 		super(name, "Plugboard", settings);
 
-		var {alphabet = STANDARD_ALPHABET, map} = settings;
+		let {alphabet = STANDARD_ALPHABET, map} = settings;
 		this.alphabet = alphabet;
 		this.map = map || alphabet;
 		this.rightMap = [];
@@ -28,8 +28,9 @@ export default class PlugBoard extends Encoder {
 	 * Call this method to configure the plug board. This will be used to
 	 * provide the plug connections
 	 *
-	 * @param {Plugs} plugs the configuration options for the plug
-	 * 	board
+	 * @public
+	 *
+	 * @param {Plugs} plugs - the configuration options for the plug board
 	 */
 	configure(plugs = []) {
 		let map = this.map;
@@ -57,13 +58,15 @@ export default class PlugBoard extends Encoder {
 	 * Call this method to convert the input connector number to the output in
 	 * the given direction.
 	 *
-	 * @param {Direction} direction either right for moving towards the reflector or
+	 * @public
+	 *
+	 * @param {Direction} direction - either right for moving towards the reflector or
 	 * 	left if moving back
-	 * @param {Number} input the input connector
+	 * @param {Number} input - the input connector
 	 * @returns {Number} the output connector
 	 */
 	encode(direction, input) {
-		var result = direction === 'right' ? this.rightMap[input]: this.leftMap[input];
+		let result = direction === 'right' ? this.rightMap[input]: this.leftMap[input];
 
 		this.fireEncodeSet(input, result, direction);
 

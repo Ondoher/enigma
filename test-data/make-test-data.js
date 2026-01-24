@@ -2,9 +2,9 @@ import '../package/lib/enigma/standardInventory.js'
 import Generator from '../package/lib/generator/Generator.js';
 import { writeFile } from "fs/promises";
 
-var messages = [];
+let messages = [];
 
-var generator = new Generator();
+let generator = new Generator();
 
 function generateI(count, list) {
 	for (let idx = 0; idx < count; idx++) {
@@ -38,7 +38,7 @@ function generateM4(count, list) {
 }
 
 
-var messages = [];
+let messages = [];
 
 generateI(20, messages);
 generateM3(20, messages);

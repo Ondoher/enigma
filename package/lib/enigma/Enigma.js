@@ -16,8 +16,8 @@ export default class Enigma extends Encoder {
 	 * The constructor for the Enigma. This represents the unconfigurable
 	 * settings of the device.
 	 *
-	 * @param {string} name
-	 * @param {EnigmaSetup} settings
+	 * @param {string} name - the name of the enigma
+	 * @param {EnigmaSetup} settings - the setup options
 	 */
 	constructor(name,  settings) {
 		super(name, "Enigma", settings)
@@ -43,6 +43,8 @@ export default class Enigma extends Encoder {
 	/**
 	 * the configured rotors
 	 *
+	 * @public
+	 *
 	 * @return {Rotor[]}
 	 */
 	get rotors() {
@@ -50,6 +52,10 @@ export default class Enigma extends Encoder {
 	}
 
 	/**
+	 * The configuration and setup options
+	 *
+	 * @public
+	 *
 	 * @returns {SimplifiedConfiguration & {reflector: string}}
 	 */
 	get configuration() {
@@ -58,6 +64,8 @@ export default class Enigma extends Encoder {
 
 	/**
 	 * Configure the Enigma for encoding.
+	 *
+	 * @public
 	 *
 	 * @param {EnigmaConfiguration} settings - the configuration of the Enigma.
 	 * These settings represent the aspects of the Enigma that can can change for daily
@@ -115,6 +123,8 @@ export default class Enigma extends Encoder {
 	/**
 	 * Call this method to "step" the rotors one time. This method will manage the
 	 * stepping between all rotors
+	 *
+	 * @public
 	 */
 	step() {
 		this._rotors.forEach((rotor, idx) => {
@@ -148,6 +158,8 @@ export default class Enigma extends Encoder {
 	/**
 	 * Call this method to set the starting rotation for the messages to encrypt
 	 *
+	 * @public
+	 *
 	 * @param {number[]|string} setup - length of the string or the array
 	 * 	should match the number of rotors and are given left to right. If start
 	 * 	is a string then the letters of the string specify the start value seen
@@ -180,7 +192,9 @@ export default class Enigma extends Encoder {
 	 * Call this method to simulate a keypress on the Enigma. This will output
 	 * the encoded letter
 	 *
-	 * @param {String} letter the key pressed
+	 * @public
+	 *
+	 * @param {String} letter - the key pressed
 	 * @returns {String | undefined} the encoded letter
 	 */
 	keyPress(letter) {
@@ -218,8 +232,10 @@ export default class Enigma extends Encoder {
 	/**
 	 * Call this shortcut method to encode a whole string
 	 *
-	 * @param {String} start the starting position for the rotors
-	 * @param {String} text the text to encode
+	 * @public
+	 *
+	 * @param {String} start - the starting position for the rotors
+	 * @param {String} text - the text to encode
 	 *
 	 * @returns {String} the encoded string.
 	 */
@@ -234,9 +250,14 @@ export default class Enigma extends Encoder {
 	}
 
 	/**
+	 * Call this method to add a function to be called when important events
+	 * happen to a component. This listener will be propagated to all installed
+	 * components. The name can be used to later remove the listener
 	 *
-	 * @param {string} name
-	 * @param {Listener} cb
+	 * @public
+	 *
+	 * @param {string} name - the name of the listener
+	 * @param {Listener} cb - the function to be called.
 	 */
 	listen(name, cb) {
 		super.listen(name, cb);
@@ -247,4 +268,22 @@ export default class Enigma extends Encoder {
 
 		this.reflector.listen(name, cb);
 	}
+
+	/**
+	 * Call this method to unregister a listener. The listener will also be
+	 * removed from all components
+	 *
+	 * @public
+	 *
+	 * @param {string} name - the name of the listener
+	 */
+
+	unlisten(name) {
+		super.unlisten(name);
+
+		for (let encoder of this.encoders) {
+			encoder.unlisten(name)
+		}
+	}
+
 }

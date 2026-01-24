@@ -62,7 +62,7 @@ export namespace rotorDefinitions {
         export { turnovers_9 as turnovers };
     }
 }
-export const reflectorDefinitions: {
+export let reflectorDefinitions: {
     A: string;
     B: string;
     C: string;

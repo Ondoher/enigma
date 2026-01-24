@@ -19,7 +19,9 @@ export default class Generator {
 	 * Call this method to turn a string into valid characters for encryption,
 	 * which is just the letters A-Z.
 	 *
-	 * @param {String} text the original text
+	 * @public
+	 *
+	 * @param {String} text - the original text
 	 * @returns {String} the text that has been normalized to what the Enigma
 	 * 	can process
 	 */
@@ -33,6 +35,8 @@ export default class Generator {
 	/**
 	 * Call this method to break a string into groups of five letters with a
 	 * space between them.
+	 *
+	 * @public
 	 *
 	 * @param {string} text - the original text
 	 * @param {number} [size] - the size of the text groups, defaults to 5
@@ -54,7 +58,9 @@ export default class Generator {
 	 * Call this method to generate the given number of sentences. The sentences
 	 * are pulled from the text of Hamlet.
 	 *
-	 * @param {Number} count the number of sentences
+	 * @public
+	 *
+	 * @param {Number} count - the number of sentences
 	 * @returns {String} the sentences separated by a ' ';
 	 */
 	generateSentences(count) {
@@ -65,9 +71,11 @@ export default class Generator {
 	 * Call this method to get the possible setup and configuration options for
 	 * the given model
 	 *
-	 * @param {Model} model
+	 * @public
 	 *
-	 * @returns {ModelOptions}
+	 * @param {Model} model - one of the standard models
+	 *
+	 * @returns {ModelOptions} the possible ways to setup and configure the model
 	 */
 	getModelOptions(model) {
 		switch (model) {
@@ -95,7 +103,9 @@ export default class Generator {
 	/**
 	 * Call this method to generate a random Enigma configuration
 	 *
-	 * @param {GeneratorSetup} [setup] options for settings
+	 * @public
+	 *
+	 * @param {GeneratorSetup} [setup] - options for settings
 
 	 * @returns {SimplifiedConfiguration} the Enigma settings.
 	 */
@@ -130,8 +140,10 @@ export default class Generator {
 	}
 
 	/**
+	 * Call this method to create a random Enigma object.
+	 * @public
 	 *
-	 * @param {string[]} [reflectors] if given, specifies and alternate list of
+	 * @param {string[]} [reflectors] - if given, specifies and alternate list of
 	 * reflectors. Defaults to ['A', 'B', 'C'];
 	 */
 	createRandomEnigma(model = "Enigma", reflectors = ['A', 'B', 'C']) {
@@ -143,7 +155,8 @@ export default class Generator {
 	 * Call this method to generate a random message text encoded with the given
 	 * Enigma. The random text will be a few sentences from Hamlet.
 	 *
-	 * @param {Enigma} enigma
+	 * @param {Enigma} enigma - the configured Enigma to use to encode the
+	 * message
 	 *
 	 * @returns {GeneratedMessage} details of the generated text
 	 */

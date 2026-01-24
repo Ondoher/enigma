@@ -28,7 +28,7 @@ class Random {
 	 * will be an integer between 0 and that number - 1. without it will be a
 	 * decimal value between 0 and < 1.
 	 *
-	 * @param {Number} [limit] if passed the upper boundary of the integer - 1
+	 * @param {Number} [limit] - if passed the upper boundary of the integer - 1
 	 *
 	 * @returns {Number} the randomized value as either an integer or a decimal
 	 *     value depending on how it was called.
@@ -78,7 +78,7 @@ class Random {
 	 * call this method to pick a random number from an array and remove it
 	 *
 	 * @template T
-	 * @param {T[]} list the array of items to choose from
+	 * @param {T[]} list - the array of items to choose from
 	 *
 	 * @returns {T} the chosen item
 	 */
@@ -95,7 +95,7 @@ class Random {
 	 *
 	 * @template T
 	 *
-	 * @param {T[]} list the array of items to choose
+	 * @param {T[]} list - the array of items to choose
 	 * @returns {T[]} the two chosen items
 	 */
 	pickPair(list) {
@@ -119,8 +119,8 @@ class Random {
 	 *
 	 * @template T
 	 *
-	 * @param {Number} count the number of items to pick
-	 * @param {T[]} list the list of items to choose from
+	 * @param {Number} count - the number of items to pick
+	 * @param {T[]} list - the list of items to choose from
 	 *
 	 * @returns {T[]} the chosen items
 	 */
@@ -140,8 +140,8 @@ class Random {
 	 * will be removed from the list.
 	 *
 	 * @template T
-	 * @param {Number} count the number of pairs to pick
-	 * @param {T[]} list the list of items to choose from
+	 * @param {Number} count - the number of pairs to pick
+	 * @param {T[]} list - the list of items to choose from
 	 *,
 	 * @returns {T[][]}} the item pairs chosen. Each pair is an array of
 	 * 	two items from the list
@@ -163,7 +163,7 @@ class Random {
 	 *
 	 * @template T
 	 *
-	 * @param {T[]} list the list of items to choose from
+	 * @param {T[]} list - the list of items to choose from
 	 * @returns {T} the chosen item
 	 */
 	chooseOne(list) {
@@ -200,8 +200,8 @@ class Random {
 	 * given list. The items are not removed.
 	 *
 	 * @template T
-	 * @param {number} count
-	 * @param {T[]} list
+	 * @param {number} count - the number of items to choose
+	 * @param {T[]} list - the list to choose from
 	 *
 	 * return {T[]}
 	 */
@@ -217,8 +217,8 @@ class Random {
 	 *
 	 * @template T
 	 *
-	 * @param {Number} count the number of items to choose
-	 * @param {T[]} list the list of items to choose from
+	 * @param {Number} count - the number of items to choose
+	 * @param {T[]} list - the list of items to choose from
 	 *
 	 * @returns {T[]} the list of items chosen
 	 */

@@ -8,8 +8,8 @@ export default class Enigma extends Encoder {
      * The constructor for the Enigma. This represents the unconfigurable
      * settings of the device.
      *
-     * @param {string} name
-     * @param {EnigmaSetup} settings
+     * @param {string} name - the name of the enigma
+     * @param {EnigmaSetup} settings - the setup options
      */
     constructor(name: string, settings: EnigmaSetup);
     plugboard: PlugBoard;
@@ -31,30 +31,42 @@ export default class Enigma extends Encoder {
     /**
      * the configured rotors
      *
+     * @public
+     *
      * @return {Rotor[]}
      */
-    get rotors(): Rotor[];
+    public get rotors(): Rotor[];
     /**
+     * The configuration and setup options
+     *
+     * @public
+     *
      * @returns {SimplifiedConfiguration & {reflector: string}}
      */
-    get configuration(): SimplifiedConfiguration & {
+    public get configuration(): SimplifiedConfiguration & {
         reflector: string;
     };
     /**
      * Configure the Enigma for encoding.
      *
+     * @public
+     *
      * @param {EnigmaConfiguration} settings - the configuration of the Enigma.
      * These settings represent the aspects of the Enigma that can can change for daily
      * configuration.
      */
-    configure(settings: EnigmaConfiguration): void;
+    public configure(settings: EnigmaConfiguration): void;
     /**
      * Call this method to "step" the rotors one time. This method will manage the
      * stepping between all rotors
+     *
+     * @public
      */
-    step(): void;
+    public step(): void;
     /**
      * Call this method to set the starting rotation for the messages to encrypt
+     *
+     * @public
      *
      * @param {number[]|string} setup - length of the string or the array
      * 	should match the number of rotors and are given left to right. If start
@@ -62,24 +74,28 @@ export default class Enigma extends Encoder {
      * 	in the window for the corresponding rotor. If it is an array then each
      * 	number will be the one-based rotation.
      */
-    setStart(setup: number[] | string): void;
+    public setStart(setup: number[] | string): void;
     /**
      * Call this method to simulate a keypress on the Enigma. This will output
      * the encoded letter
      *
-     * @param {String} letter the key pressed
+     * @public
+     *
+     * @param {String} letter - the key pressed
      * @returns {String | undefined} the encoded letter
      */
-    keyPress(letter: string): string | undefined;
+    public keyPress(letter: string): string | undefined;
     /**
      * Call this shortcut method to encode a whole string
      *
-     * @param {String} start the starting position for the rotors
-     * @param {String} text the text to encode
+     * @public
+     *
+     * @param {String} start - the starting position for the rotors
+     * @param {String} text - the text to encode
      *
      * @returns {String} the encoded string.
      */
-    translate(start: string, text: string): string;
+    public translate(start: string, text: string): string;
 }
 import Encoder from "./Encoder.js";
 import PlugBoard from "./PlugBoard.js";

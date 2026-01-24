@@ -10,10 +10,8 @@ export default class Rotor extends Encoder {
 	/**
 	 * This is the constructor for the rotor.
 	 *
-	 * @param {String} name the name of the rotor; under normal circumstances
-	 * 	this will be the string 'rotor-' plus the standard name for the rotor,
-	 	* for example 'rotor-IV'
-	 * @param {RotorSetup} settings an object that contains the various options that
+	 * @param {String} name - the name of the rotor
+	 * @param {RotorSetup} settings - an object that contains the various options that
 	 * define the the rotor and how it is configured.
 	 */
 	constructor(name, settings) {
@@ -43,9 +41,11 @@ export default class Rotor extends Encoder {
 	 * letter offset from the logical 0 connector. The initial rotation will
 	 * also take into account the ring setting
 	 *
-	 * @param {String} connector This is a letter value that corresponds to what
-	 * would appear in the rotation window. This value will be adjusted for the
-	 * ring setting.
+	 * @public
+	 *
+	 * @param {String} connector - This is a letter value that corresponds to
+	 * what would appear in the rotation window. This value will be adjusted for
+	 * the ring setting.
 	 */
 	setStartPosition(connector) {
 		let pos = this.alphabet.indexOf(connector);
@@ -59,11 +59,13 @@ export default class Rotor extends Encoder {
 	 * connector for the rotor's zero point we need to adjust the connector
 	 * number for the current rotation.
 	 *
-	 * @param {Direction} direction either right for moving towards the reflector or
-	 * 	left if moving back
-	 * @param {Number} input the connector in physical space
+	 * @public
 	 *
-	 * @returns {Number} the output connector in physical space.
+	 * @param {Direction} direction - either right for moving towards the reflector or
+	 * 	left if moving back
+	 * @param {Number} input - the connector in physical space
+	 *
+	 * @returns {Number} the output - connector in physical space.
 	 */
 	encode(direction, input) {
 		let map = direction === 'right' ? this.rightMap : this.leftMap;
@@ -83,6 +85,8 @@ export default class Rotor extends Encoder {
 	/**
 	 * Call this method to step the rotor
 	 *
+	 * @public
+	 *
 	 * @returns {Boolean} true if the next rotor should be stepped
 	 */
 	step() {
@@ -93,7 +97,6 @@ export default class Rotor extends Encoder {
 		this.offset = this.normalize(this.offset + 1);
 		let stop = this.offset;
 		let turnoverOffset = this.normalize(this.offset + this.ringOffset);
-
 
 		// turnover happens when we step past the turnover point
 		let turnover = this._turnovers.has(this.normalize(turnoverOffset - 1));
@@ -119,6 +122,8 @@ export default class Rotor extends Encoder {
 	 * turnover. The Enigma class will call this on the middle rotor to handle
 	 * double stepping.
 	 *
+	 * @public
+	 *
 	 * @returns true if this rotor will turnover on the next step
 	 */
 	willTurnover() {
@@ -128,17 +133,12 @@ export default class Rotor extends Encoder {
 		return this._turnovers.has(turnoverOffset);
 	}
 
-	shouldTurnover() {
-		let turnoverOffset = this.normalize(this.offset + 1 + this.ringOffset);
-
-		// double stepping happens when we step to the turnover point
-		return this._turnovers.has(turnoverOffset);
-
-	}
 
 	/**
 	 * Call this method to find whether this is a fixed rotor. This is used for
 	 * the non stepping rotors--beta and gamma--that are used in the M4
+	 * @public
+	 *
 	 * @returns
 	 */
 	isFixed() {

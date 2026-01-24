@@ -2,7 +2,7 @@ import Rotor from "../Rotor.js";
 import { rotorData } from './RotorData.js';
 
 describe('Rotor Test Cases', function() {
-	var rotor;
+	let rotor;
 
 	describe('Constructor', function() {
 		it('creates the reverse map table', function() {
@@ -88,13 +88,13 @@ describe('Rotor Test Cases', function() {
 
 			it('handles double step', function() {
 				rotor.setStartPosition('Q');
-				var result = rotor.willTurnover();
+				let result = rotor.willTurnover();
 				expect(result).toBe(true);
 			});
 
 			it('handles turnover', function() {
 				rotor.setStartPosition('Q');
-				var result = rotor.step();
+				let result = rotor.step();
 				expect(result).toBe(true);
 			});
 		});
@@ -115,14 +115,14 @@ describe('Rotor Test Cases', function() {
 			it('handles double step', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('Q');
-				var result = rotor.willTurnover();
+				let result = rotor.willTurnover();
 				expect(result).toBe(true);
 			});
 
 			it('handles turnover', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('Q');
-				var result = rotor.step();
+				let result = rotor.step();
 				expect(result).toBe(true);
 			});
 		});
@@ -138,121 +138,121 @@ describe('Rotor Test Cases', function() {
 
 		describe('encode to the right', function() {
 			it('rotation 0', function() {
-				var result = rotor.encode('right', 0);
+				let result = rotor.encode('right', 0);
 				expect(result).toBe(4);
 			});
 
 			it('25 steps', function() {
 				rotor.offset = 24;
-				var result = rotor.encode('right', 0);
+				let result = rotor.encode('right', 0);
 				expect(result).toBe(4);
 			});
 
 			it('1 step', function() {
 				rotor.step();
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(9);
 			})
 
 			it('ring setting 1, rotation 0', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('A');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(10);
 			});
 
 			it('ring setting 1, 1 step', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('B');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(4);
 			});
 
 			it('ring setting 1, 25 steps', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('Y');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(20);
 			});
 
 			it('ring setting 25, rotation 0', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('A');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(9);
 			});
 
 			it('ring setting 25, 1 step', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('B');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(10);
 			});
 
 			it('ring setting 25, 25 steps', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('Y');
-				var result = rotor.encode('right', 0)
+				let result = rotor.encode('right', 0)
 				expect(result).toBe(10);
 			});
 		})
 		describe('encode to the left', function() {
 			it('rotation 0', function() {
-				var result = rotor.encode('left', 0);
+				let result = rotor.encode('left', 0);
 				expect(result).toBe(20);
 			});
 
 			it('25 steps', function() {
 				rotor.offset = 24;
-				var result = rotor.encode('left', 0);
+				let result = rotor.encode('left', 0);
 				expect(result).toBe(16);
 			});
 
 			it('1 step', function() {
 				rotor.step();
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(21);
 			})
 
 			it('ring setting 1, rotation 0', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('A');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(10);
 			});
 
 			it('ring setting 1, 1 step', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('B');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(20);
 			});
 
 			it('ring setting 1, 25 steps', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('Y');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(19);
 			});
 
 			it('ring setting 25, rotation 0', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('A');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(21);
 			});
 
 			it('ring setting 25, 1 step', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('B');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(22);
 			});
 
 			it('ring setting 25, 25 steps', function() {
 				rotor.ringOffset = 25;
 				rotor.setStartPosition('Y');
-				var result = rotor.encode('left', 0)
+				let result = rotor.encode('left', 0)
 				expect(result).toBe(10);
 			});
 		})

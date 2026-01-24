@@ -7,10 +7,8 @@ export default class Rotor extends Encoder {
     /**
      * This is the constructor for the rotor.
      *
-     * @param {String} name the name of the rotor; under normal circumstances
-     * 	this will be the string 'rotor-' plus the standard name for the rotor,
-        * for example 'rotor-IV'
-     * @param {RotorSetup} settings an object that contains the various options that
+     * @param {String} name - the name of the rotor
+     * @param {RotorSetup} settings - an object that contains the various options that
      * define the the rotor and how it is configured.
      */
     constructor(name: string, settings: RotorSetup);
@@ -29,31 +27,38 @@ export default class Rotor extends Encoder {
      * letter offset from the logical 0 connector. The initial rotation will
      * also take into account the ring setting
      *
-     * @param {String} connector This is a letter value that corresponds to what
-     * would appear in the rotation window. This value will be adjusted for the
-     * ring setting.
+     * @public
+     *
+     * @param {String} connector - This is a letter value that corresponds to
+     * what would appear in the rotation window. This value will be adjusted for
+     * the ring setting.
      */
-    setStartPosition(connector: string): void;
+    public setStartPosition(connector: string): void;
     /**
      * Call this method to step the rotor
      *
+     * @public
+     *
      * @returns {Boolean} true if the next rotor should be stepped
      */
-    step(): boolean;
+    public step(): boolean;
     /**
      * Call this method to see if the next step on this rotor will lead to
      * turnover. The Enigma class will call this on the middle rotor to handle
      * double stepping.
      *
+     * @public
+     *
      * @returns true if this rotor will turnover on the next step
      */
-    willTurnover(): boolean;
-    shouldTurnover(): boolean;
+    public willTurnover(): boolean;
     /**
      * Call this method to find whether this is a fixed rotor. This is used for
      * the non stepping rotors--beta and gamma--that are used in the M4
+     * @public
+     *
      * @returns
      */
-    isFixed(): boolean;
+    public isFixed(): boolean;
 }
 import Encoder from "./Encoder.js";

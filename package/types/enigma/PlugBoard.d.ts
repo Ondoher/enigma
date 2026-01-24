@@ -5,8 +5,8 @@ export default class PlugBoard extends Encoder {
     /**
      * Constructor for the plugboard.
      *
-     * @param {String} name the name for the plugboard, defaults to 'plugboard'
-     * @param {EncoderSetup} [settings] the settings for the plugboard. Only needed if
+     * @param {String} name - the name for the plugboard, defaults to 'plugboard'
+     * @param {EncoderSetup} [settings] - the settings for the plugboard. Only needed if
      * 	using an alternate alphabet
      */
     constructor(name?: string, settings?: EncoderSetup);
@@ -18,9 +18,10 @@ export default class PlugBoard extends Encoder {
      * Call this method to configure the plug board. This will be used to
      * provide the plug connections
      *
-     * @param {Plugs} plugs the configuration options for the plug
-     * 	board
+     * @public
+     *
+     * @param {Plugs} plugs - the configuration options for the plug board
      */
-    configure(plugs?: Plugs): void;
+    public configure(plugs?: Plugs): void;
 }
 import Encoder from "./Encoder.js";

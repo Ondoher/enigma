@@ -6,11 +6,11 @@ import { enigmaData } from './EnigmaData.js';
 
 describe('Enigma Test Cases', function() {
 	/** @type {Enigma} */
-	var enigma;
+	let enigma;
 
 	function messageLoop(messages, which, cb) {
 		return messages.find(function(message) {
-			var enigma = new Enigma("Test", {
+			let enigma = new Enigma("Test", {
 				reflector: message.setup.reflector
 			});
 
@@ -20,15 +20,15 @@ describe('Enigma Test Cases', function() {
 				ringSettings: message.setup.ringSettings
 			})
 
-			var toEncode = message.message[which]
-			var encoded = enigma.translate(message.message.key,toEncode);
+			let toEncode = message.message[which]
+			let encoded = enigma.translate(message.message.key,toEncode);
 
 			return cb(message, encoded);
 		})
 	}
 
 	describe('Stepping', function() {
-		var steps = {}
+		let steps = {}
 		beforeEach(function() {
 			enigma = new Enigma("I", {
 				reflector: 'B',
@@ -51,7 +51,7 @@ describe('Enigma Test Cases', function() {
 		it ('should step only the right-most rotor when not at turnover', function() {
 			steps = {};
 			enigma.translate('AAA', 'A');
-			var stepped = Object.keys(steps);
+			let stepped = Object.keys(steps);
 			expect(stepped.length).toBe(1);
 			expect(stepped[0]).toBe('III');
 		});
@@ -82,9 +82,9 @@ describe('Enigma Test Cases', function() {
 
 	describe('Encoding', function() {
 		it('Should encode sample field messages', function() {
-			var messages = enigmaData.sampleFieldMessages;
+			let messages = enigmaData.sampleFieldMessages;
 
-			var fail = messageLoop(messages, 'decoded', function(message, decoded) {
+			let fail = messageLoop(messages, 'decoded', function(message, decoded) {
 				return decoded !== message.message.encoded;
 			})
 
@@ -92,9 +92,9 @@ describe('Enigma Test Cases', function() {
 		});
 
 		it('Should decode sample field messages', function() {
-			var messages = enigmaData.sampleFieldMessages;
+			let messages = enigmaData.sampleFieldMessages;
 
-			var fail = messageLoop(messages, 'encoded', function(message, decoded) {
+			let fail = messageLoop(messages, 'encoded', function(message, decoded) {
 				return decoded !== message.message.decoded;
 			})
 
@@ -102,9 +102,9 @@ describe('Enigma Test Cases', function() {
 		})
 
 		it('Should encode sample verified messages', function() {
-			var messages = enigmaData.sampleVerifiedMessages;
+			let messages = enigmaData.sampleVerifiedMessages;
 
-			var fail = messageLoop(messages, 'decoded', function(message, decoded) {
+			let fail = messageLoop(messages, 'decoded', function(message, decoded) {
 				return decoded !== message.message.encoded;
 			})
 
@@ -112,9 +112,9 @@ describe('Enigma Test Cases', function() {
 		});
 
 		it('Should decode sample verified messages', function() {
-			var messages = enigmaData.sampleVerifiedMessages;
+			let messages = enigmaData.sampleVerifiedMessages;
 
-			var fail = messageLoop(messages, 'encoded', function(message, decoded) {
+			let fail = messageLoop(messages, 'encoded', function(message, decoded) {
 				return decoded !== message.message.decoded;
 			})
 

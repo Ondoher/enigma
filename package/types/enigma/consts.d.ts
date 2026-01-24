@@ -1,1 +1,1 @@
-export const STANDARD_ALPHABET: string;
+export let STANDARD_ALPHABET: string;

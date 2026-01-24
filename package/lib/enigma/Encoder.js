@@ -7,11 +7,12 @@ import { STANDARD_ALPHABET } from "./consts.js";
  */
 export default class Encoder {
 	/**
-	 * Constructor for the base encoder
+	 * Constructor for the base encoder. This will the parent class for all
+	 * components
 	 *
-	 * @param {string} name
-	 * @param {ComponentType} type
-	 * @param {EncoderSetup} settings
+	 * @param {string} name - the name of the encoder
+	 * @param {ComponentType} type - the type of component
+	 * @param {EncoderSetup} settings - the base settings for the encoder
 	 */
 	constructor(name, type, settings) {
 		let {cb, alphabet = STANDARD_ALPHABET} = settings;
@@ -19,6 +20,7 @@ export default class Encoder {
 		this.type = type;
 		this.alphabet = alphabet;
 		this.contactCount = alphabet.length;
+
 		/** @type {{[name: string]: Listener}} */
 		this.listeners = {}
 
@@ -30,8 +32,9 @@ export default class Encoder {
 	/**
 	 * given a connector number, normalize it to be between 0 and 25 inclusive.
 	 *
-	 * @param {Number} connector the connector being normalized
+	 * @protected
 	 *
+	 * @param {Number} connector - the connector being normalized
 	 * @returns {Number} value between 0 and 25
 	 */
 	normalize(connector) {
@@ -39,10 +42,14 @@ export default class Encoder {
 	}
 
 	/**
+	 * Call this method to check if the given character is a valid character in
+	 * the setup alphabet. Any unexpected character except for a space will
+	 * output warning to the console.
 	 *
-	 * @param {string} letter
+	 * @public
 	 *
-	 * @returns {boolean}
+	 * @param {string} letter - the character to check
+	 * @returns {boolean} true if it is false otherwise
 	 */
 	verifyLetter(letter) {
 		if (letter.length !== 1 || this.alphabet.indexOf(letter) === -1) {
@@ -56,9 +63,12 @@ export default class Encoder {
 	}
 
 	/**
-	 * Call this method to convert a letter to a connector value
+	 * Call this method to convert a letter to a connector value.
 	 *
-	 * @param {string} letter
+	 * @public
+	 *
+	 * @param {string} letter - the character to convert. If it is not a valid
+	 * letter then this function will return undefined
 	 * @returns {number | undefined}
 	 */
 	letterToConnector(letter) {
@@ -72,7 +82,9 @@ export default class Encoder {
 	/**
 	 * Call this method to turn a connector to a letter value
 	 *
-	 * @param {number} connector
+	 * @public
+	 *
+	 * @param {number} connector - connector number to convert
 	 * @returns {string | undefined}
 	 */
 	connectorToLetter(connector) {
@@ -89,11 +101,13 @@ export default class Encoder {
 	 * numbers. The index into the array or string is the input connector, and
 	 * the value at that position is the output connector
 	 *
-	 * @param {String} map connections map.
+	 * @protected
+	 *
+	 * @param {String} map - connections map.
 	 * @returns {Array.<Number>} the numerical map
 	 */
 	makeMap(map) {
-		var letters = [...map];
+		let letters = [...map];
 		return letters.map(function(letter) {
 			return this.alphabet.indexOf(letter);
 		}, this)
@@ -103,11 +117,13 @@ export default class Encoder {
 	 * given an existing connection map from input to out put, create a new map
 	 * that has the connections going in the other direction, output to input.
 	 *
-	 * @param {Array.<Number>} map connection map
+	 * @protected
+	 *
+	 * @param {Array.<Number>} map - connection map
 	 * @returns {Array.<Number>} the reversed map
 	 */
 	makeReverseMap(map) {
-		var reverseMap = new Array(map.length);
+		let reverseMap = new Array(map.length);
 
 		map.forEach(function(input, idx) {
 			reverseMap[input] = idx;
@@ -121,9 +137,11 @@ export default class Encoder {
 	 * the given direction The default encode method just passes the input value
 	 * through
 	 *
-	 * @param {Direction} _direction either right for moving towards the reflector
+	 * @public
+	 *
+	 * @param {Direction} _direction - either right for moving towards the reflector
 	 * 	or left if moving back
-	 * @param {Number} input the specific connection receiving an input
+	 * @param {Number} input - the specific connection receiving an input
 	 *
 	 * @returns {Number} The translated output connector number
 	 */
@@ -132,9 +150,13 @@ export default class Encoder {
 	}
 
 	/**
+	 * Call this method to fire an `input` event
 	 *
-	 * @param {number | string} input
-	 * @param {Direction} direction
+	 * @protected
+	 *
+	 * @param {number | string} input - the input value as either a letter or
+	 * a number
+	 * @param {Direction} direction - the direction the signal is heading
 	 */
 	fireInput(input, direction) {
 		if (typeof input === 'number') input = this.connectorToLetter(input)
@@ -153,9 +175,13 @@ export default class Encoder {
 	}
 
 	/**
+	 * Call this method to fire an `output` even
 	 *
-	 * @param {number | string} output
-	 * @param {Direction} direction
+	 * @protected
+	 *
+	 * @param {number | string} output - the output value as either a letter or
+	 * a number
+	 * @param {Direction} direction - the direction the signal is heading
 	 */
 	fireOutput(output, direction) {
 		if (typeof output === 'number') output = this.connectorToLetter(output)
@@ -173,10 +199,15 @@ export default class Encoder {
 	}
 
 	/**
+	 * Call this method to fire a `translate` event
 	 *
-	 * @param {number | string} input
-	 * @param {number | string} output
-	 * @param {Direction} direction
+	 * @protected
+	 *
+	 * @param {number | string} input - the input value as either a letter or
+	 * a number
+	 * @param {number | string} output - the output value as either a letter or
+	 * a number
+	 * @param {Direction} direction - the direction the signal is heading
 	 */
 	fireTranslate(input, output, direction) {
 		if (typeof input === 'number') input = this.connectorToLetter(input)
@@ -195,10 +226,15 @@ export default class Encoder {
 	}
 
 	/**
+	 * Call this method to fire the `input`, `output` and `translate` events.
 	 *
-	 * @param {number | string} input
-	 * @param {number | string} output
-	 * @param {Direction} direction
+	 * @protected
+	 *
+	 * @param {number | string} input - the input value as either a letter or
+	 * a number
+	 * @param {number | string} output - the output value as either a letter or
+	 * a number
+	 * @param {Direction} direction - the direction the signal is heading
 	 */
 	fireEncodeSet(input, output, direction) {
 		this.fireInput(input, direction);
@@ -210,6 +246,8 @@ export default class Encoder {
 	 * Call this method to add a function to be called when important events
 	 * happen to a component. The name can be used to later remove the listener
 	 *
+	 * @public
+	 *
 	 * @param {string} name - the name of the listener
 	 * @param {Listener} cb - the function to be called.
 	 */
@@ -218,7 +256,9 @@ export default class Encoder {
 	}
 
 	/**
-	 * Call this method to remove a listener
+	 * Call this method to remove a listener.
+	 *
+	 * @public
 	 *
 	 * @param {string} name - the name of the listener
 	 */
@@ -228,6 +268,8 @@ export default class Encoder {
 
 	/**
 	 * Call this method to call any event listeners
+	 *
+	 * @protected
 	 *
 	 * @param {EventName} event - the event being fired
 	 * @param {String} name - the name of the component firing the event

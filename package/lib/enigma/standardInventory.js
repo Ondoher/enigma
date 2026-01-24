@@ -5,11 +5,11 @@ import inventory from'./Inventory.js';
  * I, M3 and M4
  */
 
-export var entryDiscDefinitions = {
+export let entryDiscDefinitions = {
 	default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 };
 
-export var rotorDefinitions = {
+export let rotorDefinitions = {
 	I: {
 		map: 'EKMFLGDQVZNTOWYHXUSPAIBRCJ', //p->q
 		turnovers: 'Q'
@@ -57,7 +57,7 @@ export var rotorDefinitions = {
 	}
 };
 
-export var reflectorDefinitions = {
+export let reflectorDefinitions = {
 	A: 'EJMZALYXVBWFCRQUONTSPIKHGD',
 	B: 'YRUHQSLDPXNGOKMIEBFZCWVJAT',
 	C: 'FVPJIAOYEDRZXWGCTKUQSBNMHL',

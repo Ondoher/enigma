@@ -20,16 +20,7 @@
 
 # Getting Started
 
-The Enigma toolkit is released as a nodejs ESM module. ESM is a relatively new
-standard for importing modules, and can present challenges to developers who
-need to mix the two. Using CJS modules in an ESM project is pretty straight
-forward, but the opposite is not true. Here is a good page that covers this
-issue [Mixing ESM and CJS](https://adamcoster.com/blog/commonjs-and-esm-importexport-compatibility-examples).
-To work with this code, your best bet is to create your own project also as ESM,
-by either renaming your files with the extension mjs, or adding
-```"type": "module"``` to your package.js file.
-
-To install the module, use the command:
+To install the toolkit, use the command:
 
 ```npm install @ondoher/enigma```
 
@@ -38,7 +29,7 @@ You can then import this into your code like this:
 ```JavaScript
 import {Enigma} from '@ondoher/enigma';
 
-var enigma = new Enigma("I", {reflector: 'B'});
+let enigma = new Enigma("I", {reflector: 'B'});
 ```
 
 In addition to this api, there is also [documentation](https://github.com/Ondoher/enigma/blob/main/docs/enigma.md)
@@ -46,7 +37,6 @@ that gives a brief overview of what the Enigma is, and some technical details
 about its operation. Following that is a detailed breakdown of how to go about
 writing a simulation and all of the small details and quirks that will need to
 be accounted for. And there are many.
-
 
 The API is broken into two main parts, the simulator and the message generator.
 With the simulator you can construct an entire Enigma, or just create instances
@@ -411,7 +401,7 @@ encoding the letter.
 undefined or the encoded character.
 
 ---
-`encode(start, text)`
+`translate(start, text)`
 
 Call this method to encode a whole string.
 
@@ -446,7 +436,7 @@ An array of the installed rotors
 ```javascript
 import {Enigma} from '@ondoher/enigma';
 
-var enigma = new Enigma("I", {reflector: 'B'});
+let enigma = new Enigma("I", {reflector: 'B'});
 
 enigma.configure({
     rotors: ['III', 'VI', 'VIII'],
@@ -454,8 +444,8 @@ enigma.configure({
     plugs: 'AN EZ HK IJ LR MQ OT PV SW UX'
 });
 
-var message = 'YKAENZAPMSCHZBFOCUVMRMDPYCOFHADZIZMEFXTHFLOLPZLFGGBOTGOXGRETDWTJIQHLMXVJWKZUASTR'
-var decoded = enigma.translate('UZV', message)
+let message = 'YKAENZAPMSCHZBFOCUVMRMDPYCOFHADZIZMEFXTHFLOLPZLFGGBOTGOXGRETDWTJIQHLMXVJWKZUASTR'
+let decoded = enigma.translate('UZV', message)
 
 console.log(decoded)
 

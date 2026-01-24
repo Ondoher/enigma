@@ -90,6 +90,7 @@ interface RotorSetup extends EncoderSetup {
  * - **left** - the signal is moving from left to right
  * - **turn-around** - the signal is transitioning between directions, this is
  * sent from the reflector
+ * - **end-to-end** - this is the direction used for the Enigma object
  */
 type Direction = ("right" | "left" | "turn-around" | "end-to-end");
 

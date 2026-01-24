@@ -1,6 +1,6 @@
 {
   "name": "@ondoher/enigma",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Enigma machine simulator with tools and documentation to help you build your own.",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
