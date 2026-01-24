@@ -108,11 +108,11 @@ export default class CodeBook {
 
 		let key = Random.choose(3, [...STANDARD_ALPHABET]).join('');
 		let start = Random.choose(3, [...STANDARD_ALPHABET]).join('');
-		let enc = this.enigma.encode(key, start);
+		let enc = this.enigma.translate(key, start);
 		let clear = text;
 
 		text = text.replace(/ /g, '');
-		text = this.enigma.encode(start, text);
+		text = this.enigma.translate(start, text);
 		text = this.generator.groupText(text);
 		text = paddedIndicator + ' ' + text
 
@@ -155,7 +155,7 @@ export default class CodeBook {
 		});
 
 		return {
-			options: this.enigma.configuration,
+			configuration: this.enigma.configuration,
 			parts: messages
 		}
 	}

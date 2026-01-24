@@ -21,7 +21,7 @@ describe('Enigma Test Cases', function() {
 			})
 
 			var toEncode = message.message[which]
-			var encoded = enigma.encode(message.message.key,toEncode);
+			var encoded = enigma.translate(message.message.key,toEncode);
 
 			return cb(message, encoded);
 		})
@@ -50,7 +50,7 @@ describe('Enigma Test Cases', function() {
 
 		it ('should step only the right-most rotor when not at turnover', function() {
 			steps = {};
-			enigma.encode('AAA', 'A');
+			enigma.translate('AAA', 'A');
 			var stepped = Object.keys(steps);
 			expect(stepped.length).toBe(1);
 			expect(stepped[0]).toBe('III');
@@ -58,13 +58,13 @@ describe('Enigma Test Cases', function() {
 
 		it ('should step the next rotor when the previous turns over', function() {
 			steps = {};
-			enigma.encode('AAV', 'A');
+			enigma.translate('AAV', 'A');
 			expect(steps['II'].length).toBe(1);
 		});
 
 		it ('should double step when reaching the turn over', function() {
 			steps = {};
-			enigma.encode('ADV', 'AA');
+			enigma.translate('ADV', 'AA');
 			expect(steps['II'].length).toBe(2);
 		});
 
@@ -75,7 +75,7 @@ describe('Enigma Test Cases', function() {
 
 			listen();
 
-			enigma.encode('UZV', 'AA');
+			enigma.translate('UZV', 'AA');
 			expect(steps['VI'].length).toBe(1);
 		});
 	})

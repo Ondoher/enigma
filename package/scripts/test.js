@@ -1,21 +1,27 @@
-import '../package/lib/enigma/standardInventory.js'
-import Enigma from "../package/lib/enigma/Enigma.js";
-import Generator from '../package/lib/generator/Generator.js';
-import CodeBook from '../package/lib/generator/CodeBook.js';
-import { writeFile } from "node:fs/promises";
+import '../lib/enigma/standardInventory.js'
+import Enigma from "../lib/enigma/Enigma.js";
+import Generator from '../lib/generator/Generator.js';
+import CodeBook from '../lib/generator/CodeBook.js';
+import { writeFile } from "fs/promises";
 import { enigmaData } from './EnigmaData.js';
 
 const WRITE = false;
 const GENERATE_MESSAGES = false;
 const GENERATE_CODEBOOK = false;
 const SHOW_EVENTS = true;
-const EVENT_TYPES = ["translate"];
+const EVENT_TYPES = ["translate", "input", "output", "step", "double-step"];
 const EVENT_MESSAGE = enigmaData.sampleFieldMessages[0];
 
 
 const TEST_MESSAGE_FILE = './test-messages.json';
 const TEST_CODEBOOK_FILE = './test-codebook.json';
 
+/**
+ *
+ * @param {string} model
+ * @param {number} count
+ * @param {GeneratedMessage[]} list
+ */
 function generateForModel(model, count, list) {
 	var generator = new Generator();
 
@@ -32,7 +38,12 @@ function generateForModel(model, count, list) {
 	}
 }
 
+/**
+ *
+ * @param {number} count
+ */
 async function generateMessages(count) {
+	/** @type {object[]} */
 	let messages = [];
 
 	generateForModel('I', count, messages);
@@ -47,6 +58,10 @@ async function generateMessages(count) {
 	}
 }
 
+/**
+ *
+ * @param {number} count
+ */
 async function codebook(count) {
 	var generator = new Generator();
 
@@ -83,7 +98,7 @@ function showEvents() {
 		}
 	})
 
-	let encoded = enigma.encode(EVENT_MESSAGE.message.key, EVENT_MESSAGE.message.decoded);
+	let encoded = enigma.translate(EVENT_MESSAGE.message.key, EVENT_MESSAGE.message.decoded);
 
 	console.log(encoded);
 	console.log(EVENT_MESSAGE.message.encoded);

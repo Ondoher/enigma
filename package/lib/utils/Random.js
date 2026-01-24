@@ -147,7 +147,7 @@ class Random {
 	 * 	two items from the list
 	 */
 	pickPairs(count, list) {
-		/** @type {[T, T][]} */
+		/** @type {T[][]} */
 		let result = [];
 
 		for(let idx = 0; idx < count; idx++) {

@@ -24,7 +24,7 @@ export default class Reflector extends Encoder {
 	 * the point where direction changes this does not have a distinction
 	 * between a left and right signal path.
 	 *
-	 * @param {Direction} _direction since this is the point where signal direction
+	 * @param {Direction} direction since this is the point where signal direction
 	 * changes from right to left this parameter is not used.
 	 * @param {Number} input this is the input connector
 	 *

@@ -3,5 +3,9 @@
   "version": "0.1.1",
   "author": "Glenn Anderson",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3"
+  }
 }

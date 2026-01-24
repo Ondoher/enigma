@@ -57,7 +57,7 @@ export default class PlugBoard extends Encoder {
 	 * Call this method to convert the input connector number to the output in
 	 * the given direction.
 	 *
-	 * @param {String} direction either right for moving towards the reflector or
+	 * @param {Direction} direction either right for moving towards the reflector or
 	 * 	left if moving back
 	 * @param {Number} input the input connector
 	 * @returns {Number} the output connector

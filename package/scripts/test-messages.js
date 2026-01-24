@@ -41,8 +41,8 @@ function parsePart(sheet, part) {
 	text = text.replace(/ /g, '');
 
 	enigma.configure(day.plugs, day.rotors, day.ringSettings);
-	var start = enigma.encode(part.key, part.enc);
-	text = enigma.encode(start, text);
+	var start = enigma.translate(part.key, part.enc);
+	text = enigma.translate(start, text);
 
 	return text.trim();
 }

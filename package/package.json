@@ -1,10 +1,12 @@
 {
   "name": "@ondoher/enigma",
-  "version": "1.0.3",
-  "description": "Enigma machine simulator implementation with tools and documentation to help you build your own.",
+  "version": "1.0.12",
+  "description": "Enigma machine simulator with tools and documentation to help you build your own.",
   "main": "./lib/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "types": "npx tsc -p tsconfig.json"
   },
   "author": "Glenn Anderson",
   "license": "MIT",
@@ -25,7 +27,12 @@
   "homepage": "https://github.com/Ondoher/enigma#readme",
   "type": "module",
   "devDependencies": {
+    "@types/node": "^25.0.10",
+    "@types/jasmine": "^4.6.6",
+    "undici-types": "^7.19.0",
     "jasmine": "^4.5.0",
     "jasmine-console-reporter": "^3.1.0"
+  },
+  "dependencies": {
   }
 }

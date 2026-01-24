@@ -133,43 +133,77 @@ export default class Encoder {
 
 	/**
 	 *
-	 * @param {number | string} start
-	 * @param {number | string} stop
+	 * @param {number | string} input
 	 * @param {Direction} direction
 	 */
-	fireEncodeSet(start, stop, direction) {
+	fireInput(input, direction) {
+		if (typeof input === 'number') input = this.connectorToLetter(input)
+
 		/** @type {EventData} */
 		let eventData = {
 			name: this.name,
 			type: this.type,
-			description: `input: ${start}`,
+			direction,
+			description: `${this.type} "${this.name}" received signal on ${input}`,
 			event: 'input',
-			input: start
+			input: input
 		}
 
 		this.fire('input', this.name, eventData);
+	}
 
-		if (typeof start === 'number') start = this.connectorToLetter(start)
-		if (typeof stop === 'number') stop = this.connectorToLetter(stop)
-		eventData = {
+	/**
+	 *
+	 * @param {number | string} output
+	 * @param {Direction} direction
+	 */
+	fireOutput(output, direction) {
+		if (typeof output === 'number') output = this.connectorToLetter(output)
+
+		/** @type {EventData} */
+		let eventData = {
 			name: this.name,
 			type: this.type,
-			description: `${this.type}: ${this.name} translate ${start} to ${stop}`,
-			event: 'translate',
 			direction,
-			start,
-			stop
-		}
-		this.fire('translate', this.name, eventData);
-
-		eventData = {
-			name: this.name,
-			type: this.type,
-			description: `output: ${stop}`,
+			description: `${this.type} "${this.name}" sent signal on ${output}`,
 			event: 'output',
-			output: stop
+			output: output
 		}
 		this.fire('output', this.name, eventData);
+	}
+
+	/**
+	 *
+	 * @param {number | string} input
+	 * @param {number | string} output
+	 * @param {Direction} direction
+	 */
+	fireTranslate(input, output, direction) {
+		if (typeof input === 'number') input = this.connectorToLetter(input)
+		if (typeof output === 'number') output = this.connectorToLetter(output)
+
+		/** @type {EventData} */
+		let eventData = {
+			name: this.name,
+			type: this.type,
+			direction,
+			description: `${this.type} "${this.name}" translated ${input} to ${output}`,
+			event: 'translate',
+			input, output
+		}
+		this.fire('translate', this.name, eventData);
+	}
+
+	/**
+	 *
+	 * @param {number | string} input
+	 * @param {number | string} output
+	 * @param {Direction} direction
+	 */
+	fireEncodeSet(input, output, direction) {
+		this.fireInput(input, direction);
+		this.fireOutput(output, direction);
+		this.fireTranslate(input, output, direction);
 	}
 
 	/**

@@ -20,7 +20,7 @@ interface EncoderSetup {
  * Defines how the enigma hardware is constructed. These are the settings that
  * cannot be changed
  */
-interface EnigmaSetup extends EncoderConfiguration {
+interface EnigmaSetup extends EncoderSetup {
 	/** which entry disc is part of the machine, defaults to "default" */
 	entryDisc?: string;
 	/** which reflector is part of the machine */
@@ -121,16 +121,16 @@ type EventBase = {
  */
 type TranslateData = {
 	/** the event name */
-	event: EventName = "translate";
+	event: "translate";
 
 	/** the direction the signal was sent */
 	direction: Direction;
 
 	/** the starting value */
-	start: number | string;
+	input: number | string;
 
 	/** the translated value */
-	stop: number | string;
+	output: number | string;
 }
 
 /**
@@ -138,21 +138,20 @@ type TranslateData = {
  */
 type StepData = {
 	/** the event name */
-	event: EventName = "step";
+	event: "step";
 
 	/** the starting rotor position */
-	start: number | string;
+	start: number;
 
 	/** the ending rotor position */
-	stop: number | string
+	stop: number;
 
 	/** the locations of the turnover points for this rotor */
 	turnover: boolean;
 }
 
 type DoubleStepData = {
-	eventName: EventName = "double-step",
-	rotor: string;
+	event: "double-step",
 	offset: number;
 }
 
@@ -161,10 +160,13 @@ type DoubleStepData = {
  */
 type InputData = {
 	/** the event name */
-	event: EventName = "input";
+	event: "input";
 
 	/** the input connection */
 	input: number | string;
+
+	/** the direction the signal was sent */
+	direction: Direction;
 }
 
 /**
@@ -172,14 +174,17 @@ type InputData = {
  */
 type OutputData = {
 	/** the event name */
-	event: EventName = "output";
+	event: "output";
 
 	/** the output connection */
 	output: number | string;
+
+	/** the direction the signal was sent */
+	direction: Direction;
 }
 
 /** Defines the discriminated union for all the event data */
-type EventData = EventBase & (TranslateData | StepData | InputData | OutputData);
+type EventData = EventBase & (TranslateData | StepData | InputData | OutputData | DoubleStepData);
 
 type Listener = (
 	/** name of the event being fired*/

@@ -59,7 +59,7 @@ export default class Rotor extends Encoder {
 	 * connector for the rotor's zero point we need to adjust the connector
 	 * number for the current rotation.
 	 *
-	 * @param {String} direction either right for moving towards the reflector or
+	 * @param {Direction} direction either right for moving towards the reflector or
 	 * 	left if moving back
 	 * @param {Number} input the connector in physical space
 	 *
@@ -97,12 +97,13 @@ export default class Rotor extends Encoder {
 
 		// turnover happens when we step past the turnover point
 		let turnover = this._turnovers.has(this.normalize(turnoverOffset - 1));
+		let turnoverStr = turnover ? 'with turnover' : ''
 
 		/** @type {EventData} */
 		let eventData = {
 			name: this.name,
 			type: this.type,
-			description: `step ${this.name}, ${this.offset} ${this.normalize(this.offset + this.ringOffset)} ${turnoverOffset} ${Boolean(turnover)}`,
+			description: `Rotor "${this.name}" stepped from ${start} to ${stop}${turnoverStr}`,
 			event: 'step',
 			turnover, start, stop
 		}

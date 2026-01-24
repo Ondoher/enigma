@@ -109,9 +109,9 @@ export default class Generator {
 		let useRotors = structuredClone(setup.rotors || unfixed);
 		let rotors = Random.pick(3, useRotors);
 		let ringSettings = Random.choose(3, connectors);
-		let plugsList = Random.pickPairs(10, letters);
+		let plugsPairs = Random.pickPairs(10, letters);
 
-		plugsList = plugsList.map((pair) => pair.join(""));
+		let plugsList = plugsPairs.map((pair) => pair.join(""));
 
 		ringSettings[0]++;
 		ringSettings[1]++;
@@ -153,8 +153,9 @@ export default class Generator {
 		let decoded = this.cleanMessage(this.generateSentences(count));
 		let start = Random.choose(enigma.rotors.length, [...STANDARD_ALPHABET]).join('');
 
-		let encoded = enigma.encode(start, decoded);
+		let encoded = enigma.translate(start, decoded);
 
-		return {start, encoded, decoded, configuration: enigma.configuration};
+		return {start, encoded, decoded,
+			configuration: enigma.configuration};
 	}
 }

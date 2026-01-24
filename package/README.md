@@ -66,16 +66,82 @@ will be passed to every constructed component.
 
 The signature of this callback should look like this:
 
-`function (event, name, message, info)`
+---
+`function (event, name, data)`
 
-### **Parameters**
-- **event** a string that identifies the specific action being taken.
-- **name** the name of the class instance that has fired this event
-- **message** a string that describes the event taking place
-- **info** an object that contains information relevant to the event
+#### **Parameters**
+- **event** - which event is being fired.
+- **name** - the name of the component that has fired this event
+- **data** - an object that contains information relevant to the event
+
+### **Event Types**
+There are five different events, they are.
+- **input** - fired when any component receives a signal
+- **output** - fired when any component sends a signal
+- **translate** - fired when a component outputs a signal, contains information
+about both the input and the output
+- **step** - fired when a rotor steps
+- **double-step** - fired when a rotor performs the double step.
+
+### Common
+
+Every event contains these parameters,
+
+- **name** - contains the name of the component sending the event
+- **type** - the type of component sending the event. This is one of *Entry Wheel*,
+    *Plugboard*, *Reflector*, *Rotor* and *Enigma*
+- **description** - a human readable string that details the event
+- **direction** - this is not sent for all events, but is for *input*, *output*,
+and *translate*, it is one of:
+
+    - **right** - this is the direction the translation starts until it hits
+    the reflector
+    - **left** - this is the direction translation happens after going through
+    the reflector.
+    - **turn-around** - sent by the reflector
+    - **end-to-end** - sent by the Enigma
+
+
+### input
+This event is fired when any component receives a signal. In addition to the
+common fields, the data object contains these fields:
+
+- **input** - this is the input value, it can be either a string or a number
+
+### output
+
+This event is fired sent when any component sends a signal. In addition to the
+common fields, the data object contains these fields:
+
+- **output** - this is the output value, it can be either a string or a number
+
+### translate
+
+This event is fired when a component outputs a signal, contains information
+about both the input and the output. In addition to the common fields, the data
+object contains these fields:
+
+- **input** - this is the input value, it can be either a string or a number
+- **output** - this is the output value, it can be either a string or a number
+
+### step
+
+This event is fired when a rotor steps. In addition to the common fields, the
+data object contains these fields:
+
+- **start** - the staring position of the rotor
+- **stop** - the ending position of the rotor
+- **turnover** - true if the the stepping reached the turnover point
 
 The specific events and data are defined in the class documentation that
 follows.
+
+### double-step
+
+This event is fired when a rotor performs the double step. In addition to the
+common fields, the data object contains these fields:
+
+- **offset** - the new position of the rotor
 
 ## PlugBoard
 Create an instance of this class to simulate the plug board component of an
@@ -122,16 +188,6 @@ Call this method to encode a value in the given direction, right vs left.
 
 #### **Returns**
 the output connector
-
-#### **Events**
-
-`encode-right, encode-left`
-
-These events will be fired during encoding. The info parameter will have these
-fields.
-
-- **input** the number of the connector that received input
-- **output** the number of the connector for the encoded value
 
 ## Rotor
 
@@ -277,16 +333,6 @@ between a left and right signal path.
 #### **Returns**
 the output connector
 
-### **Events**
-
-`encode`
-
-This event will be fired during encoding. The info parameter will have these
-fields.
-
-- **input** the number of the connector that received input
-- **output** the number of the connector for the encoded value
-
 ## Enigma
 
 Create an instance of this class to construct a full Enigma.
@@ -379,26 +425,6 @@ Call this method to encode a whole string.
 the encoded string. Passing the result of this method back through the encode
     method should produce the original text.
 
-### **Events**
-
-In addition to firing all the events from its components, the Enigma will also
-fire these events.
-
-`input`
-
-This is fired at the beginning of encoding each letter. It is fired after
-verifying the letter, but before stepping. The info parameter contains these
-fields.
-
-- **letter** the letter to be encoded
-
-`output`
-
-This is fired after encoding each letter. The info parameter contains these
-fields.
-
-- **letter** the encoded letter.
-
 ## **Properties**
 
 `configuration`
@@ -429,7 +455,7 @@ enigma.configure({
 });
 
 var message = 'YKAENZAPMSCHZBFOCUVMRMDPYCOFHADZIZMEFXTHFLOLPZLFGGBOTGOXGRETDWTJIQHLMXVJWKZUASTR'
-var decoded = enigma.encode('UZV', message)
+var decoded = enigma.translate('UZV', message)
 
 console.log(decoded)
 

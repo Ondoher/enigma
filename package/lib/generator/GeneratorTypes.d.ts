@@ -89,12 +89,13 @@ type GeneratedMessage = {
 	encoded: string;
 	/** the decoded string */
 	decoded: string;
+	configuration?: SimplifiedConfiguration;
 }
 
 type Model = ("I" | "M3" | "M4");
 
 type ModelOptions = {
 	rotors: string[];
-	fixed: string[];
+	fixed: string[] | boolean;
 	reflectors: string[];
 }

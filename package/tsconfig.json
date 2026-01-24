@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "allowJs": true,           /* Allow JavaScript files to be compiled. */
+    "checkJs": true,           /* Report errors in .js files. */
+    "declaration": true,       /* Generate .d.ts files for JS files. */
+    "emitDeclarationOnly": true, /* Only emit .d.ts files, not the source .js files. */
+    "outDir": "./types",        /* Redirect output to the 'types' folder. */
+	"paths": {
+      "undici-types": [
+        "./node_modules/undici-types/index.d.ts"
+      ]
+	}
+  },
+  "include": ["lib/**/*.js", "lib/**/*.d.ts"],   /* Specify which JS files to include (e.g., in a 'src' directory). */
+  "exclude": ["node_modules"],   /* Exclude standard folders. */
+}

@@ -37,7 +37,7 @@ export default class Enigma extends Encoder {
 		/** @type {Encoder[]} */
 		this.encoders = [];
 		/**@type {SimplifiedConfiguration & {reflector: string}} */
-		this._configuration = {reflector}
+		this._configuration = {reflector, ringSettings: [], rotors: [], plugs: ''};
 	}
 
 	/**
@@ -107,13 +107,13 @@ export default class Enigma extends Encoder {
 
 		this._configuration = {...this._configuration,
 			rotors,
-			ringOffsets,
+			ringSettings: ringOffsets,
 			plugs: this.plugboard.plugs
 		}
 	}
 
 	/**
-	 * Call this method to step the rotors one time. This method will manage the
+	 * Call this method to "step" the rotors one time. This method will manage the
 	 * stepping between all rotors
 	 */
 	step() {
@@ -126,9 +126,10 @@ export default class Enigma extends Encoder {
 				/** @type {EventData} */
 				let eventData = {
 					name: rotor.name,
+					description: `rotor ${rotor.name} double stepping from ${rotor.offset}`,
+					type: this.type,
 					event: "double-step",
 					offset: rotor.offset,
-					description: `rotor ${rotor.name} double stepping from ${rotor.offset}`
 				}
 
 				this.fire('double-step', rotor.name, eventData);
@@ -166,8 +167,7 @@ export default class Enigma extends Encoder {
 			start = setup;
 		}
 
-		start = [...start].reverse();
-
+		start = [...start].reverse().join('');
 		// reset the rotation pending state
 		this.pending = {0: true};
 
@@ -190,7 +190,7 @@ export default class Enigma extends Encoder {
 		}
 
 		let connector = this.letterToConnector(letter);
-
+		this.fireInput(letter, "right");
 		this.step();
 
 		// encode to the right
@@ -210,7 +210,8 @@ export default class Enigma extends Encoder {
 
 		const outputLetter = this.connectorToLetter(connector);
 
-		this.fireEncodeSet(letter, outputLetter, "end-to-end")
+		this.fireOutput(outputLetter, "left");
+		this.fireTranslate(letter, outputLetter, "end-to-end");
 		return outputLetter;
 	}
 
@@ -222,7 +223,7 @@ export default class Enigma extends Encoder {
 	 *
 	 * @returns {String} the encoded string.
 	 */
-	encode(start, text) {
+	translate(start, text) {
 		this.setStart(start)
 		let letters = [...text];
 		let output = letters.map(function(letter) {
