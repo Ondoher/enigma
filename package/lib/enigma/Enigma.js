@@ -127,12 +127,35 @@ export default class Enigma extends Encoder {
 	 * @public
 	 */
 	step() {
+		// Only the notches on the first two rotors effect stepping. One rotor's
+		// alphabet ring prevents the next rotor from turning unless the first
+		// rotor's notch is exposed. When a rotor does step, so does the
+		// previous  rotor  because they are attached by the notch in the
+		// previous rotor's  ring
+
+		// precalculate if and why a rotor should step, the first rotor is
+		// always engaged
+		/** @type {{engaged:boolean, nextEngaged: boolean}[]} */
+		let step = []
+
+		step[0] = {engaged: true, nextEngaged: false};
+
+		for (let idx = 1; idx < 3; idx++) {
+			let engaged = this._rotors[idx - 1].atTurnover();
+			let nextEngaged = idx < 2 && this._rotors[idx].atTurnover();
+
+			step[idx] = {engaged, nextEngaged};
+		}
+
 		this._rotors.forEach((rotor, idx) => {
 			if (rotor.isFixed()) return;
 
-			// This is the double stepping. Only do this for the middle rotor
-			if (rotor.willTurnover() && idx === 1) {
-				this.pending[idx] = true
+			if (step[idx].engaged || step[idx].nextEngaged) {
+				rotor.step();
+			}
+
+			// the double-step is caused by the the next rotor stepping
+			if (step[idx].nextEngaged) {
 				/** @type {EventData} */
 				let eventData = {
 					name: rotor.name,
@@ -141,18 +164,9 @@ export default class Enigma extends Encoder {
 					event: "double-step",
 					offset: rotor.offset,
 				}
-
 				this.fire('double-step', rotor.name, eventData);
-			};
-
-			if (this.pending[idx]) {
-				this.pending[idx] = false;
-				if (rotor.step()) this.pending[idx + 1] = true;
 			}
 		});
-
-		// The first rotor is always stepping
-		this.pending[0] = true;
 	}
 
 	/**

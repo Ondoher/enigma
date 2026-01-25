@@ -5,6 +5,12 @@ import Encoder from "./Encoder.js";
  * Create an instance of this class to construct a Rotor object. The Rotor class
  * encapsulates many of the peculiar behaviors of the Enigma. All connector
  * values here are specified in physical space.
+ *
+ * There are three positioning systems to keep in mind. There is the logical
+ * position that map an input to an output as defined by the wiring. There is
+ * the physical position of the rotor in space as related to the location of the
+ * connectors, the rotation offset. And there is an additional adjustment, the
+ * ring setting, that moves the internal wiring against the rotational position.
  */
 export default class Rotor extends Encoder {
 	/**
@@ -18,6 +24,7 @@ export default class Rotor extends Encoder {
 		super(name, "Rotor", settings);
 		let { map = STANDARD_ALPHABET, turnovers = '', ringSetting = 0} = settings
 
+		this._settings = structuredClone(settings);
 		this.map = [...map];
 		this.rightMap = this.makeMap(map);
 		this.leftMap = this.makeReverseMap(this.rightMap);
@@ -35,6 +42,17 @@ export default class Rotor extends Encoder {
 			return turnovers;
 		}, turnoverSet);
 	}
+
+	/**
+	 * @returns {RotorSetup}
+	 */
+	get settings() {
+		return this._settings;
+	}
+
+	// get offset() {
+	// 	return this._offset
+	// }
 
 	/**
 	 * Call this method to select the initial rotation of the rotor. This is a
@@ -83,13 +101,19 @@ export default class Rotor extends Encoder {
 	}
 
 	/**
-	 * Call this method to step the rotor
+	 * Call this method to step the rotor. This is only responsible for updating
+	 * the internal state. Double stepping is done by the enigma class
 	 *
 	 * @public
-	 *
-	 * @returns {Boolean} true if the next rotor should be stepped
 	 */
 	step() {
+		// let start = this.offset;
+
+		// // do the step
+		// this.offset = this.normalize(this.offset + 1);
+
+		// let stop = this.offset;
+
 		// Because the turnover notch is attached to the outer ring, and the
 		// logical coordinates are based on the wiring, the logical position of
 		// the notch for turnover needs to be adjusted to remove the ring offset.
@@ -111,26 +135,21 @@ export default class Rotor extends Encoder {
 			turnover, start, stop
 		}
 
-		// console.log("firing", eventData);
 		this.fire('step', this.name, eventData);
 
 		return turnover;
 	}
 
 	/**
-	 * Call this method to see if the next step on this rotor will lead to
-	 * turnover. The Enigma class will call this on the middle rotor to handle
-	 * double stepping.
+	 * Call this method to see if the router turnover notch is exposed.
 	 *
 	 * @public
 	 *
-	 * @returns true if this rotor will turnover on the next step
+	 * @returns true if it is, false otherwise
 	 */
-	willTurnover() {
-		let turnoverOffset = this.normalize(this.offset + this.ringOffset);
-
-		// double stepping happens when we step to the turnover point
-		return this._turnovers.has(turnoverOffset);
+	atTurnover() {
+		let currentOffset = this.normalize(this.offset + this.ringOffset);
+		return this._turnovers.has(currentOffset);
 	}
 
 

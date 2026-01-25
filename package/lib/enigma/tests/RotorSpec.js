@@ -11,7 +11,7 @@ describe('Rotor Test Cases', function() {
 				map: rotorData.createData.map,
 			});
 
-			expect(rotor.leftMap).toEqual(rotorData.createData.reverseMap)
+			expect(rotor["leftMap"]).toEqual(rotorData.createData.reverseMap)
 		});
 
 		it('sets the length to the map length', function() {
@@ -20,7 +20,7 @@ describe('Rotor Test Cases', function() {
 				map: rotorData.createData.map,
 			});
 
-			expect(rotor.length).toEqual(rotorData.createData.map.length)
+			expect(rotor["length"]).toEqual(rotorData.createData.map.length)
 		});
 
 		it('remembers multiple turnovers', function() {
@@ -88,7 +88,7 @@ describe('Rotor Test Cases', function() {
 
 			it('handles double step', function() {
 				rotor.setStartPosition('Q');
-				let result = rotor.willTurnover();
+				let result = rotor.atTurnover();
 				expect(result).toBe(true);
 			});
 
@@ -115,7 +115,7 @@ describe('Rotor Test Cases', function() {
 			it('handles double step', function() {
 				rotor.ringOffset = 1;
 				rotor.setStartPosition('Q');
-				let result = rotor.willTurnover();
+				let result = rotor.atTurnover();
 				expect(result).toBe(true);
 			});
 

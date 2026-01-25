@@ -170,13 +170,14 @@ model, this was a straight pass through, having no effect on the output. But
 different variations on the Enigma used different entry discs. <sup>[13]</sup>
 
 ## Rotor Rotation
-Stepping is the process of advancing the rotor 1/26th of a rotation. For rotor
-one, this happens on every keypress. Each rotor has a notch on it that
-determines which position on the rotor triggers the following rotor to step.
-This is called turnover. There is an odd behavior during this rotation. After
-rotor three steps, if rotor two is at its turnover point, then that rotor will
-also step on the next keypress. This is in addition to the step it will take
-once it has passed its turnover. This is called double stepping.
+Stepping is the process of advancing the rotor 1/26th of a rotation. On every keypress rotor one will always step, for the other rotors this will happen
+when the notch of the rotor to its right is at its turnover point. However, when
+a rotor does step it will also step the rotor to its right. Because of this,
+when the second rotor steps so that it's notch is at the turnover point this
+will cause rotor three to step on the next keypress, thus taking rotor two with
+it. This is called a double step, since rotor this leads rotor two to step on
+two consecutive key presses.
+
 
 ## Setup
 There are three settings on the Enigma that can be configured to produce
@@ -513,7 +514,7 @@ let Enigma = new Enigma("I", {reflector: 'B'});
 
 Enigma.configure({
     rotors: ['II', 'I', 'V'],
-    ringSetting: 'AAA',
+    ringSettings: 'AAA',
     plugs: ['AB', 'IR', 'UX', 'KP']
 });
 ```

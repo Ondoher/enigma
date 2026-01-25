@@ -440,7 +440,7 @@ let enigma = new Enigma("I", {reflector: 'B'});
 
 enigma.configure({
     rotors: ['III', 'VI', 'VIII'],
-    ringSetting: [1, 8, 13],
+    ringSettings: [1, 8, 13],
     plugs: 'AN EZ HK IJ LR MQ OT PV SW UX'
 });
 

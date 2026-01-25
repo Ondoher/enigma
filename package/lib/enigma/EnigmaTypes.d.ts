@@ -147,7 +147,7 @@ type StepData = {
 	/** the ending rotor position */
 	stop: number;
 
-	/** the locations of the turnover points for this rotor */
+	/** true if the rotor has rotated to its turnover location */
 	turnover: boolean;
 }
 

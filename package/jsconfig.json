@@ -2,8 +2,11 @@
   "compilerOptions": {
     "target": "es2022", // Or a newer version like "es2020"
     "module": "es2022",
-    "checkJs": true
-  },
+    "checkJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/@types/*", "*"]
+    }  },
   "exclude": [
     "node_modules"
   ],
