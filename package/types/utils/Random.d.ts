@@ -18,14 +18,14 @@ declare class Random {
      */
     randomize(value: number): void;
     /**
-     * Call this method to get a random number. If passed a value, the return
-     * will be an integer between 0 and that number - 1. without it will be a
-     * decimal value between 0 and < 1.
+     * Call this method to get a pseudo-random number from the current generator
+     * state. When called without a limit it returns a floating point number in
+     * the half-open interval [0, 1). When called with a limit it returns an
+     * integer in the half-open interval [0, limit).
      *
-     * @param {Number} [limit] - if passed the upper boundary of the integer - 1
+     * @param {Number} [limit] - optional exclusive upper bound for integer output
      *
-     * @returns {Number} the randomized value as either an integer or a decimal
-     *     value depending on how it was called.
+     * @returns {Number} the randomized value as either a float or bounded integer
      */
     random(limit?: number): number;
     /**
@@ -41,6 +41,54 @@ declare class Random {
      * @return {number} the random number
      */
     randomCurve(dice: number, faces: number, zeroBased?: boolean): number;
+    /**
+     * Generate a normally distributed random number using the Box-Muller transform.
+     *
+     * @param {number} [mean] - center of the distribution
+     * @param {number} [stddev] - standard deviation
+     *
+     * @returns {number} a normally distributed random number
+     */
+    randomNormal(mean?: number, stddev?: number): number;
+    /**
+     * Generate a uniformly distributed integer in the inclusive range [start, end].
+     *
+     * @param {number} start
+     * @param {number} end
+     *
+     * @returns {number} a uniformly distributed integer
+     */
+    randomInt(start: number, end: number): number;
+    /**
+     * Generate a normally distributed integer by rounding the output of randomNormal.
+     *
+     * @param {number} [mean] - center of the distribution
+     * @param {number} [stddev] - standard deviation
+     *
+     * @returns {number} a rounded normally distributed integer
+     */
+    randomNormalInt(mean?: number, stddev?: number): number;
+    /**
+     * Generate a normally distributed integer within an inclusive range.
+     * Values outside the range are discarded and retried.
+     *
+     * @param {number} start - inclusive lower bound
+     * @param {number} end - inclusive upper bound
+     * @param {number} [mean] - defaults to midpoint
+     * @param {number} [stddev] - defaults to range / 6
+     *
+     * @returns {number} a normally distributed integer within the given range
+     */
+    randomNormalRange(start: number, end: number, mean?: number | undefined, stddev?: number | undefined): number;
+    /**
+     * Convenience alias for a bell-shaped integer over an inclusive range.
+     *
+     * @param {number} start
+     * @param {number} end
+     *
+     * @returns {number} a normally distributed integer within the given range
+     */
+    randomBell(start: number, end: number): number;
     /**
      * call this method to pick a random number from an array and remove it
      *

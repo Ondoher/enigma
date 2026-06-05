@@ -1,17 +1,27 @@
 {
     "enigma": {
-        "name": "I",
+        "seed": 1234,
+        "model": "M3",
         "reflector": "B",
         "rotors": [
-            "III",
             "VI",
+            "V",
             "VIII"
         ],
-        "ringSettings": [
-            1,
-            8,
-            13
+        "plugs": [
+            "AL"
         ],
-        "plugs": "AN EZ HK IJ LR MQ OT PV SW UX"
+        "ringSettings": [
+            12,
+            19,
+            13
+        ]
+    },
+    "rotor": {
+        "name": "III"
+    },
+    "encode": {
+        "key": "AAA",
+        "message": "mymessage"
     }
 }

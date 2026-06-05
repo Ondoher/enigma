@@ -6,9 +6,9 @@ import { writeFile } from "fs/promises";
 import { enigmaData } from './EnigmaData.js';
 
 const WRITE = false;
-const GENERATE_MESSAGES = false;
+const GENERATE_MESSAGES = true;
 const GENERATE_CODEBOOK = false;
-const SHOW_EVENTS = true;
+const SHOW_EVENTS = false;
 const EVENT_TYPES = ["translate", "input", "output", "step", "double-step"];
 const EVENT_MESSAGE = enigmaData.sampleFieldMessages[0];
 
@@ -26,7 +26,8 @@ function generateForModel(model, count, list) {
 	let generator = new Generator();
 
 	let {reflectors, rotors, fixed} = generator.getModelOptions(model);
-	let enigma = generator.createRandomEnigma(model, reflectors)
+	let {reflector} = generator.generateEnigmaSetup(model, reflectors)
+	let enigma = new Enigma(model, {reflector})
 
 	for (let idx = 0; idx < count; idx++) {
 		let configuration = generator.generateEnigmaConfiguration({rotors, fixed});
@@ -66,7 +67,8 @@ async function codebook(count) {
 	let generator = new Generator();
 
 	let {reflectors} = generator.getModelOptions("I");
-	let enigma = generator.createRandomEnigma("I", reflectors)
+	let {model, reflector} = generator.generateEnigmaSetup("I", reflectors);
+	let enigma = new Enigma(model, {reflector})
 	let codeBook = new CodeBook(enigma);
 
 	let keySheet = codeBook.generateKeySheet(30);
@@ -106,11 +108,11 @@ function showEvents() {
 
 
 if (GENERATE_MESSAGES) {
-	await generateMessages(20);
+	await generateMessages(WRITE ? 20 : 2);
 }
 
 if (GENERATE_CODEBOOK) {
-	await codebook(20);
+	await codebook(WRITE? 20 : 2);
 }
 
 if (SHOW_EVENTS) {

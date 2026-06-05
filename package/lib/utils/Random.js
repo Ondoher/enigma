@@ -24,14 +24,14 @@ class Random {
 	}
 
 	/**
-	 * Call this method to get a random number. If passed a value, the return
-	 * will be an integer between 0 and that number - 1. without it will be a
-	 * decimal value between 0 and < 1.
+	 * Call this method to get a pseudo-random number from the current generator
+	 * state. When called without a limit it returns a floating point number in
+	 * the half-open interval [0, 1). When called with a limit it returns an
+	 * integer in the half-open interval [0, limit).
 	 *
-	 * @param {Number} [limit] - if passed the upper boundary of the integer - 1
+	 * @param {Number} [limit] - optional exclusive upper bound for integer output
 	 *
-	 * @returns {Number} the randomized value as either an integer or a decimal
-	 *     value depending on how it was called.
+	 * @returns {Number} the randomized value as either a float or bounded integer
 	 */
 	random(limit)
 	{
@@ -45,7 +45,7 @@ class Random {
 		rand = rand % randLimit
 		rand = rand * randPow;
 
-		if (limit) {
+		if (limit !== undefined) {
 			rand = Math.floor(Math.abs(rand) * limit);
 		}
 
@@ -72,6 +72,112 @@ class Random {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Generate a normally distributed random number using the Box-Muller transform.
+	 *
+	 * @param {number} [mean] - center of the distribution
+	 * @param {number} [stddev] - standard deviation
+	 *
+	 * @returns {number} a normally distributed random number
+	 */
+	randomNormal(mean = 0, stddev = 1) {
+		let u1 = 0;
+		let u2 = 0;
+
+		// Avoid log(0)
+		while (u1 === 0) {
+			u1 = this.random();
+		}
+
+		while (u2 === 0) {
+			u2 = this.random();
+		}
+
+		let z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+
+		return z0 * stddev + mean;
+	}
+
+	/**
+	 * Generate a uniformly distributed integer in the inclusive range [start, end].
+	 *
+	 * @param {number} start
+	 * @param {number} end
+	 *
+	 * @returns {number} a uniformly distributed integer
+	 */
+	randomInt(start, end) {
+		if (!Number.isInteger(start) || !Number.isInteger(end)) {
+			throw new Error('start and end must be integers');
+		}
+
+		if (end < start) {
+			throw new Error('end must be greater than or equal to start');
+		}
+
+		return start + this.random(end - start + 1);
+	}
+
+	/**
+	 * Generate a normally distributed integer by rounding the output of randomNormal.
+	 *
+	 * @param {number} [mean] - center of the distribution
+	 * @param {number} [stddev] - standard deviation
+	 *
+	 * @returns {number} a rounded normally distributed integer
+	 */
+	randomNormalInt(mean = 0, stddev = 1) {
+		return Math.round(this.randomNormal(mean, stddev));
+	}
+
+	/**
+	 * Generate a normally distributed integer within an inclusive range.
+	 * Values outside the range are discarded and retried.
+	 *
+	 * @param {number} start - inclusive lower bound
+	 * @param {number} end - inclusive upper bound
+	 * @param {number} [mean] - defaults to midpoint
+	 * @param {number} [stddev] - defaults to range / 6
+	 *
+	 * @returns {number} a normally distributed integer within the given range
+	 */
+	randomNormalRange(start, end, mean = undefined, stddev = undefined) {
+		if (!Number.isInteger(start) || !Number.isInteger(end)) {
+			throw new Error('start and end must be integers');
+		}
+
+		if (end < start) {
+			throw new Error('end must be greater than or equal to start');
+		}
+
+		if (start === end) {
+			return start;
+		}
+
+		let width = end - start;
+		let center = mean ?? (start + end) / 2;
+		let spread = stddev ?? (width / 6);
+
+		while (true) {
+			let value = this.randomNormalInt(center, spread);
+			if (value >= start && value <= end) {
+				return value;
+			}
+		}
+	}
+
+	/**
+	 * Convenience alias for a bell-shaped integer over an inclusive range.
+	 *
+	 * @param {number} start
+	 * @param {number} end
+	 *
+	 * @returns {number} a normally distributed integer within the given range
+	 */
+	randomBell(start, end) {
+		return this.randomNormalRange(start, end);
 	}
 
 	/**

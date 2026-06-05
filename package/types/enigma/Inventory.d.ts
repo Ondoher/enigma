@@ -6,9 +6,9 @@ export default _default;
  */
 declare class Inventory {
     entryDiscs: {};
-    /** @type {{[name: string]: RouterInventorySpec}}*/
+    /** @type {{[name: string]: RotorInventorySpec}}*/
     rotors: {
-        [name: string]: RouterInventorySpec;
+        [name: string]: RotorInventorySpec;
     };
     reflectors: {};
     /**

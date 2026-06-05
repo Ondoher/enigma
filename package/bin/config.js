@@ -2,7 +2,7 @@
 /** @type {EnigmaConfig} */
 export const CONFIG = {
 	enigma: {
-		name: "I",
+		model: "I",
 		reflector: 'B',
 		rotors: ['III', 'VI', 'VIII'],
 		ringSettings: [1, 8, 13],

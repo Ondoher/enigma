@@ -32,8 +32,6 @@ export default class Enigma extends Encoder {
 		this.length = alphabet.length;
 		/** @type {Rotor[]} */
 		this._rotors = [];
-		/** @type {{[rotor: number]: boolean}} */
-		this.pending = [];
 		/** @type {Encoder[]} */
 		this.encoders = [];
 		/**@type {SimplifiedConfiguration & {reflector: string}} */
@@ -121,34 +119,36 @@ export default class Enigma extends Encoder {
 	}
 
 	/**
-	 * Call this method to "step" the rotors one time. This method will manage the
-	 * stepping between all rotors
+	 * Call this method to "step" the rotors one time. This method will manage
+	 * the stepping for all rotors.
 	 *
 	 * @public
 	 */
 	step() {
 		// Only the notches on the first two rotors effect stepping. One rotor's
-		// alphabet ring prevents the next rotor from turning unless the first
+		// alphabet ring prevents the next rotor from stepping unless the first
 		// rotor's notch is exposed. When a rotor does step, so does the
 		// previous  rotor  because they are attached by the notch in the
-		// previous rotor's  ring
+		// previous rotor's ring
 
-		// precalculate if and why a rotor should step, the first rotor is
-		// always engaged
 		/** @type {{engaged:boolean, nextEngaged: boolean}[]} */
 		let step = []
 
+		// precalculate if and why all rotors should step, the first rotor is
+		// always engaged
 		step[0] = {engaged: true, nextEngaged: false};
-
-		for (let idx = 1; idx < 3; idx++) {
+		for (let idx = 1; idx < this.rotors.length; idx++) {
 			let engaged = this._rotors[idx - 1].atTurnover();
 			let nextEngaged = idx < 2 && this._rotors[idx].atTurnover();
 
 			step[idx] = {engaged, nextEngaged};
 		}
 
+		// perform the steps as specified
 		this._rotors.forEach((rotor, idx) => {
-			if (rotor.isFixed()) return;
+			if (rotor.isFixed()) {
+				return;
+			}
 
 			if (step[idx].engaged || step[idx].nextEngaged) {
 				rotor.step();
@@ -159,7 +159,7 @@ export default class Enigma extends Encoder {
 				/** @type {EventData} */
 				let eventData = {
 					name: rotor.name,
-					description: `rotor ${rotor.name} double stepping from ${rotor.offset}`,
+					description: `rotor ${rotor.name} double stepping to ${rotor.offset}`,
 					type: this.type,
 					event: "double-step",
 					offset: rotor.offset,
@@ -170,32 +170,31 @@ export default class Enigma extends Encoder {
 	}
 
 	/**
-	 * Call this method to set the starting rotation for the messages to encrypt
+	 * Call this method to set the starting rotation for the messages to
+	 * encrypt. The length of the string or the array should match the number of
+	 * rotors and are given left to right. If start is a string then the letters
+	 * of the string specify the start value seen in the window for the
+	 * corresponding rotor. If it is an array then each	number will be the
+	 * one-based rotation.
 	 *
 	 * @public
 	 *
-	 * @param {number[]|string} setup - length of the string or the array
-	 * 	should match the number of rotors and are given left to right. If start
-	 * 	is a string then the letters of the string specify the start value seen
-	 * 	in the window for the corresponding rotor. If it is an array then each
-	 * 	number will be the one-based rotation.
+	 * @param {number[]|string} startPositions - the start positions for encryption
 	 */
-	setStart(setup) {
+	setStart(startPositions) {
 		let start = '';
-		if (Array.isArray(setup)) {
-			let charArray = setup.map(function(number) {
+		if (Array.isArray(startPositions)) {
+			let charArray = startPositions.map((number) => {
 				number--;
 				return this.alphabet[number];
-			}, this);
+			});
 
 			start = charArray.join('');
 		} else {
-			start = setup;
+			start = startPositions;
 		}
 
 		start = [...start].reverse().join('');
-		// reset the rotation pending state
-		this.pending = {0: true};
 
 		this.rotors.forEach(function(rotor, idx) {
 			rotor.setStartPosition(start[idx]);

@@ -9,8 +9,9 @@ class Inventory {
 	 */
 	constructor() {
 		this.entryDiscs = {};
-		/** @type {{[name: string]: RouterInventorySpec}}*/
+		/** @type {{[name: string]: RotorInventorySpec}}*/
 		this.rotors = {};
+		/** @type {{[name: string]: ReflectorInventorySpec}} */
 		this.reflectors = {};
 	}
 
@@ -69,9 +70,7 @@ class Inventory {
 	 * @param {String} name - the name of the rotor as it was added to the
 	 * 	inventory.
 	 *
-	 * @returns {Object} the rotor definition
-	 * @property {String} map - the connection map for the rotor
-	 * @property {String} turnovers the locations where turnovers happen
+	 * @returns {RotorInventorySpec | undefined}
 	 */
 	getRotor(name) {
 		return this.rotors[name];
@@ -82,8 +81,7 @@ class Inventory {
 	 *
 	 * @param {String} name - the name of the reflector as it was added to the
 	 * 	inventory.
-	 * @returns {Object} the reflector definition
-	 * @property {String} the connection map for the reflector
+	 * @returns {ReflectorInventorySpec | undefined} the reflector definition
 	 */
 	getReflector(name) {
 		return this.reflectors[name];

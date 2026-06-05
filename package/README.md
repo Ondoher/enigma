@@ -351,7 +351,8 @@ The constructor for the Enigma.
 Call this method to configure the enigma instance for daily setup.
 
 #### **Parameters**
-- **settings** the configuration parameters for the device.
+- **settings** the configuration parameters for the device. This is an object
+    with these fields:
     - _plugs_ (optional) this specifies how the plug board should be configured.
     This is either a string with the plugs specified as pairs of letters
     separated by a single space, or an array of letter pairs.
@@ -557,7 +558,7 @@ The second is the generation and use of message code books, specifically the
 creation of key sheets and generation of messages using those key sheets. This
 is implemented across three classes.
 
-- **Random** - Umplements a seedable pseudo-random number generator. The use of
+- **Random** - Implements a seedable pseudo-random number generator. The use of
     seeds allows running experiments on a predictable set of pseudo-random data
 - **Generator** - Use this to create random configurations of an Enigma and
 generate messages for that configuration.
@@ -768,7 +769,7 @@ a specific Enigma model. The supported models are *I, M3 and M4*
 
 #### Returns
 
-An object with these fields
+An object with these fields:
 
 - **reflectors** - The names of the possible reflectors installed for this model.
 - **rotors** - The names of the rotors available for this model
@@ -781,30 +782,32 @@ Call this method to get a random configuration for an enigma.
 
 #### **Paramters**
 - **setup** - the options for configuration with these fields
-    - **rotors** (optional) - the list of rotors to choose from. Defaults to
+    - *rotors* (optional) - the list of rotors to choose from. Defaults to
     the list of unfixed rotors in the inventory
-    - **fixed** (optional) - if true, it defaults to the list of installed fixed
+    - *fixed* (optional) - if true, it defaults to the list of installed fixed
     rotors, if an array, uses this array as the list of fixed rotors to choose
     from. The default is an empty array.
 
 #### **Returns**
-An object with these fields>
+An object with these fields:
 - **rotors** - the rotors to install
 - **plugs** - the plug board configuration as a string if space separated pairs
 - **ringSettings** - an array of numbers for the ring setting for each rotor
 
 ---
-`createRandomEnigma(model, reflectors)`
+`generateEnigmaSetup(model, reflectors)`
 
-Call this method to create a new Enigma object, with a reflector chosen from the
-given list.
+Call this method to generate a random enigma setup from the provided options.
 
 #### **Parameters**
-- **model** (optional) - the model of the Enigma, defaults to the string "Enigma"
-- **reflectors** (optional) - the possible reflectors, defaults to [A, B, C]
+- **model** (optional) - the model of the Enigma, defaults to the model "I"
+- **reflectors** (optional) - the possible reflectors to the reflectors for the
+given model.
 
 #### **Returns**
-- a newly created `Enigma` instance
+an object with these fields:
+- **model** - the Enigma model
+- **reflector** - the chosen reflector.
 
 ---
 `generateMessage(enigma)`
@@ -830,7 +833,8 @@ letter
 ```javascript
     function generateForModel(model, count, list) {
         let {reflectors, rotors, fixed} = generator.getModelOptions(model);
-        let enigma = generator.createRandomEnigma(model, reflectors)
+        let {reflector} = generator.generateEnigmaSetup(model, reflectors)
+        let enigma = new Enigma(model, {reflector})
 
         for (let idx = 0; idx < count; idx++) {
             let configuration = generator.generateEnigmaConfiguration({rotors, fixed});
@@ -847,6 +851,8 @@ letter
     generateForModel('I', 5, messages);
     generateForModel('M3', 5, messages);
     generateForModel('M4', 5, messages);
+
+    console.log(messages);
 ```
 
 ## CodeBook

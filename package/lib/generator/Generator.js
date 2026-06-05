@@ -101,6 +101,27 @@ export default class Generator {
 	}
 
 	/**
+	 * Call this method to verify if the given string is a valid supported model,
+	 * and convert it to the `Model` type.
+	 * @param {string} str - the string to check
+	 * @return {Model | false} the model, or false if there is no match
+	 */
+	getModelType(str) {
+		/** @type {{[name: string]: Model}} */
+		const map = {
+			"I": "I",
+			"M3": "M3",
+			"M4": "M4",
+		}
+
+		if (map[str] === undefined) {
+			return false;
+		}
+
+		return map[str];
+	}
+
+	/**
 	 * Call this method to generate a random Enigma configuration
 	 *
 	 * @public
@@ -140,15 +161,27 @@ export default class Generator {
 	}
 
 	/**
-	 * Call this method to create a random Enigma object.
+	 * Call this method to create a random Enigma setup from the
+	 * given options. If no model is provided, it will default to "I". If
+	 * no reflectors are provided it will default to the possible
+	 * reflectors for the given model.
+
 	 * @public
 	 *
-	 * @param {string[]} [reflectors] - if given, specifies and alternate list of
-	 * reflectors. Defaults to ['A', 'B', 'C'];
+	 * @param {Model} [model] - the model of Enigma being provided, i
+	 * @param {string[]} [reflectors] - the reflectors to choose from
+	 *
+	 * @return {{model: Model, reflector: string}}
+	 *
 	 */
-	createRandomEnigma(model = "Enigma", reflectors = ['A', 'B', 'C']) {
+	generateEnigmaSetup(model = "I", reflectors = []) {
+		if (reflectors.length === 0) {
+			let options = this.getModelOptions(model)
+
+		}
 		let reflector = Random.pickOne(reflectors);
-		return new Enigma(model, {model, reflector});
+
+		return {model, reflector}
 	}
 
 	/**

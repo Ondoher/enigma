@@ -62,13 +62,13 @@ describe('Enigma Test Cases', function() {
 			expect(steps['II'].length).toBe(1);
 		});
 
-		it ('should double step when reaching the turn over', function() {
+		it ('should double step when rotor three steps', function() {
 			steps = {};
 			enigma.translate('ADV', 'AA');
 			expect(steps['II'].length).toBe(2);
 		});
 
-		it ('should double step on first step', function() {
+		it ('should perform the double step on the first keypress if necessary', function() {
 			steps = {};
 
 			enigma.configure({rotors: ['III', 'VI', 'VIII'], ringSettings: [1, 8, 13]});
